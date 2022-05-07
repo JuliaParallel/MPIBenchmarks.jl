@@ -1,10 +1,19 @@
 export IMBAllreduce
 
 struct IMBAllreduce <: MPIBenchmark
+    conf::Configuration
     name::String
-    default_filename::String
 end
-IMBAllreduce() = IMBAllreduce("IMB Allreduce", "julia_imb_allreduce.csv")
+
+function IMBAllreduce(T::Type=UInt8;
+                      verbose::Bool=true,
+                      filename::Union{String,Nothing}="julia_imb_allreduce.csv",
+                      )
+    return IMBAllreduce(
+        Configuration(T; verbose, filename),
+        "IMB Allreduce",
+    )
+end
 
 function imb_allreduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     send_buffer = zeros(T, bufsize)
@@ -19,5 +28,4 @@ function imb_allreduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     return avgtime
 end
 
-Base.run(bench::IMBAllreduce, conf::Configuration) =
-    run_imb_collective(bench, imb_allreduce, conf)
+Base.run(bench::IMBAllreduce) = run_imb_collective(bench, imb_allreduce, bench.conf)

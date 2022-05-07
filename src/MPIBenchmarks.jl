@@ -4,16 +4,17 @@ using MPI
 
 abstract type MPIBenchmark end
 
-struct Configuration{T,R<:AbstractVector{Int}}
+struct Configuration{T}
     T::Type{T}
-    lengths::R
+    lengths::UnitRange{Int}
     iters::Function
     stdout::IO
     filename::Union{String,Nothing}
 end
 
 function Configuration(T::Type;
-                       stdout::IO=Base.stdout,
+                       stdout::Union{IO,Nothing}=nothing,
+                       verbose::Bool=true,
                        filename::Union{String,Nothing}=nothing,
                        )
     isprimitivetype(T) || throw(ArgumentError("Type $(T) is not a primitive type"))
@@ -23,11 +24,11 @@ function Configuration(T::Type;
     # We want to send minimum 0 bytes, maximum 4 MiB.  Maximim lenght is then 2 ^ (22 - log2size)
     lengths = -1:(22 - log2size)
     iters(s::Int) = s < (16 - log2size) ? 1000 : (640 >> (s - (16 - log2size)))
+    if isnothing(stdout)
+        stdout = verbose ? Base.stdout : Base.devnull
+    end
     return Configuration(T, lengths, iters, stdout, filename)
 end
-
-Base.run(bench::MPIBenchmark; T::Type=UInt8, verbose::Bool=true, filename::Union{String,Nothing}=bench.default_filename) =
-    Base.run(bench, Configuration(T; stdout=(verbose ? stdout : devnull), filename))
 
 include("imb_collective.jl")
 include("imb_p2p.jl")

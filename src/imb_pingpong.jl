@@ -1,10 +1,19 @@
 export IMBPingPong
 
 struct IMBPingPong <: MPIBenchmark
+    conf::Configuration
     name::String
-    default_filename::String
 end
-IMBPingPong() = IMBPingPong("IMB PingPong", "julia_imb_pingpong.csv")
+
+function IMBPingPong(T::Type=UInt8;
+                     verbose::Bool=true,
+                     filename::Union{String,Nothing}="julia_imb_pingpong.csv",
+                     )
+    return IMBPingPong(
+        Configuration(T; verbose, filename),
+        "IMB Pingpong",
+    )
+end
 
 function imb_pingpong(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     rank = MPI.Comm_rank(comm)
@@ -29,5 +38,4 @@ function imb_pingpong(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     return avgtime
 end
 
-Base.run(bench::IMBPingPong, conf::Configuration) =
-    run_imb_p2p(bench, imb_pingpong, conf)
+Base.run(bench::IMBPingPong) = run_imb_p2p(bench, imb_pingpong, bench.conf)

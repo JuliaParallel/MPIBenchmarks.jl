@@ -68,6 +68,8 @@ function run_imb_collective(benchmark::MPIBenchmark, func::Function, conf::Confi
             close(file)
         end
     end
+
+    return nothing
 end
 
 include("imb_allreduce.jl")

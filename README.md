@@ -35,7 +35,7 @@ add https://github.com/JuliaParallel/MPIBenchmarks.jl
 
 ## Usage
 
-`MPIBenchmarks.jl` currently provides the following benchmarks
+`MPIBenchmarks.jl` currently provides the following benchmark types
 
 * collective
   * `IMBAllreduce()`: inspired by IMB Allreduce
@@ -49,16 +49,18 @@ After loading the package
 using MPIBenchmarks
 ```
 
-to run a benchmark use the function `run(<BENCHMARK NAME>)`, replacing `<BENCHMARK NAME>`
-with the name of the benchmark you want to run, from the list above.  The function
-`run(::MPIBenchmark)` takes some keyword arguments:
+to run a benchmark use the function `run(<BENCHMARK TYPE>)`, replacing `<BENCHMARK TYPE>`
+with the name of the benchmark you want to run, from the list above.  The benchmarking types
+take the following arguments:
 
-* `T::Type`: data type to use for the communication.  It must be a bits type, with size in
-  bytes which is a power of 2.  Default is `UInt8`.
-* `verbose::Bool`: whether to print to `stdout` some information.  Default is `true`.
-* `filename::Union{String,Nothing}`: name of the output CSV file where to save the results
-  of the benchmark.  If `nothing`, the file is not written.  Default is a string with the
-  name of the given benchmark (e.g., `"julia_imb_pingpong.csv"` for `IMBPingPong`).
+* optional positional argument:
+  * `T::Type`: data type to use for the communication.  It must be a bits type, with size in
+	bytes which is a power of 2.  Default is `UInt8`
+* keyword arguments:
+  * `verbose::Bool`: whether to print to `stdout` some information.  Default is `true`.
+  * `filename::Union{String,Nothing}`: name of the output CSV file where to save the results
+	of the benchmark.  If `nothing`, the file is not written.  Default is a string with the
+	name of the given benchmark (e.g., `"julia_imb_pingpong.csv"` for `IMBPingPong`).
 
 ### Example
 

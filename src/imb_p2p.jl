@@ -69,6 +69,8 @@ function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
             close(file)
         end
     end
+
+    return nothing
 end
 
 include("imb_pingpong.jl")
