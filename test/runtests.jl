@@ -34,9 +34,10 @@ end
         script = """
             using MPIBenchmarks
             const verbose = false
-            const filename = nothing
-            run(IMBAllreduce; verbose, filename)
-            run(IMBReduce; verbose, filename)
+            mktemp() do filename, io
+                run(IMBAllreduce; verbose, filename)
+                run(IMBReduce; verbose, filename)
+            end
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
     end
@@ -45,8 +46,9 @@ end
         script = """
             using MPIBenchmarks
             const verbose = false
-            const filename = nothing
-            run(IMBPingPong; verbose, filename)
+            mktemp() do filename, io
+                run(IMBPingPong; verbose, filename)
+            end
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
     end
