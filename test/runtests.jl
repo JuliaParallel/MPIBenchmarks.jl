@@ -29,7 +29,7 @@ using MPI: mpiexec
 end
 
 @testset "Run benchmarks" begin
-    julia = `julia --startup-file=no`
+    julia = `$(Base.julia_cmd()) --startup-file=no`
     @testset "IMB - Collective" begin
         script = """
             using MPIBenchmarks
