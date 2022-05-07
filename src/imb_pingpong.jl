@@ -10,11 +10,11 @@ function imb_pingpong(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     tic = MPI.Wtime()
     for i = 1:iters
         if rank == 0
-            MPI.Send(buffer, 1, tag, comm)
-            MPI.Recv!(buffer, 1, tag, comm)
+            MPI.Send(buffer, comm; dest=1, tag)
+            MPI.Recv!(buffer, comm; source=1, tag)
         elseif rank == 1
-            MPI.Recv!(buffer, 0, tag, comm)
-            MPI.Send(buffer, 0, tag, comm)
+            MPI.Recv!(buffer, comm; source=0, tag)
+            MPI.Send(buffer, comm; dest=0, tag)
         end
     end
     toc = MPI.Wtime()
