@@ -15,7 +15,7 @@ function run_imb_collective(benchmark::MPIBenchmark, func::Function, conf::Confi
         print_timings(io, bytes, min_time, max_time, avg_time) = println(io, bytes, ",", min_time, ",", max_time, ",", avg_time)
 
         println(conf.stdout, "----------------------------------------")
-        println(conf.stdout,  "Running benchmark ", benchmark.name, " on ", nranks, " MPI ranks")
+        println(conf.stdout, "Running benchmark ", benchmark.name, " with type ", conf.T, " on ", nranks, " MPI ranks")
         println(conf.stdout)
         print_header(conf.stdout)
         if !isnothing(conf.filename)

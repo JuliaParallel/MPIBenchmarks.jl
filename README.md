@@ -42,6 +42,7 @@ add https://github.com/JuliaParallel/MPIBenchmarks.jl
   * `IMBReduce()`: inspired by IMB Reduce
 * point-to-point:
   * `IMBPingPong()`: inspired by IMB PingPong
+  * `IMBPingPing()`: inspired by IMB PingPing
 
 After loading the package
 
@@ -72,6 +73,7 @@ using MPIBenchmarks
 run(IMBAllreduce())
 run(IMBReduce())
 run(IMBPingPong())
+run(IMBPingPing())
 ```
 
 Then execute it with the following command

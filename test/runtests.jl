@@ -50,10 +50,18 @@ end
             const verbose = false
             mktemp() do filename, io
                 run(IMBPingPong(; verbose, filename))
+                run(IMBPingPing(; verbose, filename))
             end
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
         # Point-to-point benchmarks require at least 2 processes
+        script = """
+            using MPIBenchmarks
+            const verbose = false
+            mktemp() do filename, io
+                run(IMBPingPong(; verbose, filename))
+            end
+            """
         @test !success(mpiexec(cmd->ignorestatus(`$(cmd) -np 1 $(julia) --project -e $(script)`)))
     end
 end

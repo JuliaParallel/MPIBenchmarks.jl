@@ -1,4 +1,5 @@
-function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuration)
+function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuration;
+                     divide_latency_by_two::Bool=false)
     MPI.Init()
 
     comm = MPI.COMM_WORLD
@@ -20,7 +21,7 @@ function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
         print_timings(io, bytes, latency, throughput) = println(io, bytes, ",", latency, ",", throughput)
 
         println(conf.stdout, "----------------------------------------")
-        println(conf.stdout, "Running benchmark ", benchmark.name, " on ", nranks, " MPI ranks")
+        println(conf.stdout, "Running benchmark ", benchmark.name, " with type ", conf.T, " on ", nranks, " MPI ranks")
         println(conf.stdout)
         print_header(conf.stdout)
         if !isnothing(conf.filename)
@@ -45,15 +46,18 @@ function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
             time_1 = MPI.Recv(typeof(time), comm; source=1)
             # Maximum of the times measured across all ranks
             max_time = max(time_0, time_1)
-            # Aggregate time across all ranks
-            aggregate_time = time_0 + time_1
 
             # Number of bytes trasmitted
             bytes = size * sizeof(conf.T)
             # Latency
-            latency = aggregate_time / (2 * nranks)
+            latency = max_time
+            if divide_latency_by_two
+                # I don't follow all the steps in IMB PingPong benchmark, but here they
+                # divide latency by two (number of ranks)
+                latency /= 2
+            end
             # Throughput
-            throughput = (nranks * bytes) / max_time / 1e6
+            throughput = bytes / latency / 1e6
 
             # Print out our results
             print_timings(conf.stdout, bytes, latency, throughput)
@@ -74,3 +78,4 @@ function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
 end
 
 include("imb_pingpong.jl")
+include("imb_pingping.jl")

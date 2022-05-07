@@ -38,4 +38,4 @@ function imb_pingpong(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     return avgtime
 end
 
-Base.run(bench::IMBPingPong) = run_imb_p2p(bench, imb_pingpong, bench.conf)
+Base.run(bench::IMBPingPong) = run_imb_p2p(bench, imb_pingpong, bench.conf; divide_latency_by_two=true)
