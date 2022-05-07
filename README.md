@@ -38,10 +38,10 @@ add https://github.com/JuliaParallel/MPIBenchmarks.jl
 `MPIBenchmarks.jl` currently provides the following benchmarks
 
 * collective
-  * `IMBAllreduce`: inspired by IMB Allreduce
-  * `IMBReduce`: inspired by IMB Reduce
+  * `IMBAllreduce()`: inspired by IMB Allreduce
+  * `IMBReduce()`: inspired by IMB Reduce
 * point-to-point:
-  * `IMBPingPong`: inspired by IMB PingPong
+  * `IMBPingPong()`: inspired by IMB PingPong
 
 After loading the package
 
@@ -67,9 +67,9 @@ Write a script like the following:
 ```julia
 using MPIBenchmarks
 
-run(IMBAllreduce)
-run(IMBReduce)
-run(IMBPingPong)
+run(IMBAllreduce())
+run(IMBReduce())
+run(IMBPingPong())
 ```
 
 Then execute it with the following command

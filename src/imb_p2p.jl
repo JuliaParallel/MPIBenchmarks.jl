@@ -1,4 +1,4 @@
-function run_imb_p2p(bench_func::Function, conf::Configuration)
+function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuration)
     MPI.Init()
 
     comm = MPI.COMM_WORLD
@@ -11,18 +11,27 @@ function run_imb_p2p(bench_func::Function, conf::Configuration)
     rank = MPI.Comm_rank(comm)
 
     # Warmup
-    bench_func(conf.T, 1, 10, comm)
+    func(conf.T, 1, 10, comm)
 
-    if !isnothing(conf.filename) && iszero(rank)
-        file = open(conf.filename, "w")
-        println(file, "size (bytes),time (seconds),throughput (MB/s)")
+    if iszero(rank)
+        print_header(io) = println(io, "size (bytes),time (seconds),throughput (MB/s)")
+        print_timings(io, bytes, latency, throughput) = println(io, bytes, ",", latency, ",", throughput)
+
+        println(conf.stdout, "----------------------------------------")
+        println(conf.stdout, "Running benchmark ", benchmark.name, " on ", nranks, " MPI ranks")
+        println(conf.stdout)
+        print_header(conf.stdout)
+        if !isnothing(conf.filename)
+            file = open(conf.filename, "w")
+            print_header(file)
+        end
     end
 
     for s in conf.lengths
         size = 1 << s
         iters = conf.iters(s)
         # Measure time on current rank
-        time = bench_func(conf.T, size, iters, comm)
+        time = func(conf.T, size, iters, comm)
 
         if !iszero(rank)
             # If we aren't on rank 0, send to it our time
@@ -45,18 +54,19 @@ function run_imb_p2p(bench_func::Function, conf::Configuration)
             throughput = (nranks * bytes) / max_time / 1e6
 
             # Print out our results
-            if conf.verbose
-                @show bytes, latency, throughput
-            end
+            print_timings(conf.stdout, bytes, latency, throughput)
             if !isnothing(conf.filename)
-                println(file, bytes, ",", latency, ",", throughput)
+                print_timings(file, bytes, latency, throughput)
             end
         end
     end
 
-    if !isnothing(conf.filename) && iszero(rank)
-        close(file)
-    end    
+    if iszero(rank)
+        println(conf.stdout, "----------------------------------------")
+        if !isnothing(conf.filename)
+            close(file)
+        end
+    end
 end
 
 include("imb_pingpong.jl")
