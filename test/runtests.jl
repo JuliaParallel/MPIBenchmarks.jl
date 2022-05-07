@@ -38,6 +38,7 @@ end
             const verbose = false
             mktemp() do filename, io
                 run(IMBAllreduce(; verbose, filename))
+                run(IMBGatherv(; verbose, filename))
                 run(IMBReduce(; verbose, filename))
             end
             """

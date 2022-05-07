@@ -39,6 +39,7 @@ add https://github.com/JuliaParallel/MPIBenchmarks.jl
 
 * collective
   * `IMBAllreduce()`: inspired by IMB Allreduce
+  * `IMBGatherv()`: inspired by IMB Gatherv
   * `IMBReduce()`: inspired by IMB Reduce
 * point-to-point:
   * `IMBPingPong()`: inspired by IMB PingPong

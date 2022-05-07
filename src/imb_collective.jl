@@ -73,4 +73,5 @@ function run_imb_collective(benchmark::MPIBenchmark, func::Function, conf::Confi
 end
 
 include("imb_allreduce.jl")
+include("imb_gatherv.jl")
 include("imb_reduce.jl")
