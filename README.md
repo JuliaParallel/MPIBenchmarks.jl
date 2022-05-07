@@ -39,6 +39,7 @@ add https://github.com/JuliaParallel/MPIBenchmarks.jl
 
 * collective
   * `IMBAllreduce()`: inspired by IMB Allreduce
+  * `IMBAlltoall()`: inspired by IMB Alltoall
   * `IMBGatherv()`: inspired by IMB Gatherv
   * `IMBReduce()`: inspired by IMB Reduce
 * point-to-point:
@@ -60,6 +61,8 @@ take the following arguments:
 	bytes which is a power of 2.  Default is `UInt8`
 * keyword arguments:
   * `verbose::Bool`: whether to print to `stdout` some information.  Default is `true`.
+  * `max_size::Int`: maximum size of the data to transmit, in bytes.  It must be
+    a power of 2 and larger than the size of the datatype `T`.
   * `filename::Union{String,Nothing}`: name of the output CSV file where to save the results
 	of the benchmark.  If `nothing`, the file is not written.  Default is a string with the
 	name of the given benchmark (e.g., `"julia_imb_pingpong.csv"` for `IMBPingPong`).

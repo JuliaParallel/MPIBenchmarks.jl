@@ -13,16 +13,19 @@ struct Configuration{T}
 end
 
 function Configuration(T::Type;
+                       max_size::Int=1 << 22,
                        stdout::Union{IO,Nothing}=nothing,
                        verbose::Bool=true,
                        filename::Union{String,Nothing}=nothing,
                        )
+    ispow2(max_size) || throw(ArgumentError("Maximum size must be a power of 2, found $(max_size)"))
     isprimitivetype(T) || throw(ArgumentError("Type $(T) is not a primitive type"))
     size = sizeof(T)
     ispow2(size) || throw(ArgumentError("Type $(T) must have size which is a power of 2, found $(size)"))
+    max_size > size || throw(ArgumentError("Maximum size in bytes ($(max_size)) must be larger than size of the data type in bytes $(size)"))
     log2size = Int(log2(sizeof(T)))
-    # We want to send minimum 0 bytes, maximum 4 MiB.  Maximim lenght is then 2 ^ (22 - log2size)
-    lengths = -1:(22 - log2size)
+    last_length = Int(log2(max_size))
+    lengths = -1:(last_length - log2size)
     iters(s::Int) = s < (16 - log2size) ? 1000 : (640 >> (s - (16 - log2size)))
     if isnothing(stdout)
         stdout = verbose ? Base.stdout : Base.devnull
