@@ -6,11 +6,11 @@ struct IMBReduce <: MPIBenchmark
 end
 
 function IMBReduce(T::Type=UInt8;
-                   verbose::Bool=true,
                    filename::Union{String,Nothing}="julia_imb_reduce.csv",
+                   kwargs...,
                    )
     return IMBReduce(
-        Configuration(T; verbose, filename),
+        Configuration(T; filename, kwargs...),
         "IMB Reduce",
     )
 end

@@ -6,11 +6,11 @@ struct IMBPingPong <: MPIBenchmark
 end
 
 function IMBPingPong(T::Type=UInt8;
-                     verbose::Bool=true,
                      filename::Union{String,Nothing}="julia_imb_pingpong.csv",
+                     kwargs...,
                      )
     return IMBPingPong(
-        Configuration(T; verbose, filename),
+        Configuration(T; filename, kwargs...),
         "IMB Pingpong",
     )
 end

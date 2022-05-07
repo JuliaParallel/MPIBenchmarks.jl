@@ -6,11 +6,11 @@ struct IMBAllreduce <: MPIBenchmark
 end
 
 function IMBAllreduce(T::Type=UInt8;
-                      verbose::Bool=true,
                       filename::Union{String,Nothing}="julia_imb_allreduce.csv",
+                      kwargs...,
                       )
     return IMBAllreduce(
-        Configuration(T; verbose, filename),
+        Configuration(T; filename, kwargs...),
         "IMB Allreduce",
     )
 end
