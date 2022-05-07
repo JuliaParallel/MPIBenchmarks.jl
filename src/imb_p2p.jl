@@ -2,6 +2,12 @@ function run_imb_p2p(bench_func::Function, conf::Configuration)
     MPI.Init()
 
     comm = MPI.COMM_WORLD
+    # Number of ranks
+    nranks = MPI.Comm_size(comm)
+    if nranks < 2
+        error("Point-to-point benchmarks require at least 2 MPI ranks")
+    end
+    # Current rank
     rank = MPI.Comm_rank(comm)
 
     # Warmup
@@ -31,8 +37,6 @@ function run_imb_p2p(bench_func::Function, conf::Configuration)
             # Aggregate time across all ranks
             aggregate_time = time_0 + time_1
 
-            # Number of ranks
-            nranks = MPI.Comm_size(comm)
             # Number of bytes trasmitted
             bytes = size * sizeof(conf.T)
             # Latency

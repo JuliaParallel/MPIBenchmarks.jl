@@ -7,7 +7,7 @@ function imb_allreduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     recv_buffer = zeros(T, bufsize)
     MPI.Barrier(comm)
     tic = MPI.Wtime()
-    for i = 1:iters
+    for i in 1:iters
         MPI.Allreduce!(send_buffer, recv_buffer, +, comm)
     end
     toc = MPI.Wtime()

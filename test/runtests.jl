@@ -26,6 +26,8 @@ using MPI: mpiexec
     @test conf_float64.iters.(13:19) == [640, 320, 160, 80, 40, 20, 10]
     @test conf_float64.verbose === true
     @test isnothing(conf_float64.filename)
+
+    @test_throws ArgumentError Configuration(Configuration)
 end
 
 @testset "Run benchmarks" begin
@@ -51,5 +53,7 @@ end
             end
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
+        # Point-to-point benchmarks require at least 2 processes
+        @test !success(mpiexec(cmd->ignorestatus(`$(cmd) -np 1 $(julia) --project -e $(script)`)))
     end
 end

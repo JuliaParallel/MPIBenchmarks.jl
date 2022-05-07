@@ -8,11 +8,14 @@ function imb_pingpong(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     tag = 0
     MPI.Barrier(comm)
     tic = MPI.Wtime()
-    for i = 1:iters
-        if rank == 0
+    for i in 1:iters
+        if iszero(rank)
             MPI.Send(buffer, comm; dest=1, tag)
             MPI.Recv!(buffer, comm; source=1, tag)
-        elseif rank == 1
+        elseif isone(rank)
+            # Note: this branch must run on rank 1 only: if the benchmark is run with more
+            # than 2 MPI ranks, the other ranks would wait indefinitely for a message from
+            # rank 0.
             MPI.Recv!(buffer, comm; source=0, tag)
             MPI.Send(buffer, comm; dest=0, tag)
         end
