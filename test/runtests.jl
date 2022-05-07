@@ -33,9 +33,10 @@ end
     @testset "IMB - Collective" begin
         script = """
             using MPIBenchmarks
-            conf = MPIBenchmarks.Configuration(UInt8; verbose=false, filename=nothing)
-            run(IMBAllreduce, conf)
-            run(IMBReduce, conf)
+            const verbose = false
+            const filename = nothing
+            run(IMBAllreduce; verbose, filename)
+            run(IMBReduce; verbose, filename)
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
     end
@@ -43,8 +44,9 @@ end
     @testset "IMB - Point-to-point" begin
         script = """
             using MPIBenchmarks
-            conf = MPIBenchmarks.Configuration(UInt8; verbose=false, filename=nothing)
-            run(IMBPingPong, conf)
+            const verbose = false
+            const filename = nothing
+            run(IMBPingPong; verbose, filename)
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
     end

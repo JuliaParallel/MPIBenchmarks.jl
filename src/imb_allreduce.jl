@@ -18,5 +18,5 @@ end
 Base.run(::Type{IMBAllreduce}, conf::Configuration) =
     run_imb_collective(imb_allreduce, conf)
 
-Base.run(bench::Type{IMBAllreduce}; T::Type=UInt8, filename::Union{String,Nothing}="julia_imb_allreduce.csv") =
-    Base.run(bench, Configuration(T; filename))
+Base.run(bench::Type{IMBAllreduce}; T::Type=UInt8, verbose::Bool=true, filename::Union{String,Nothing}="julia_imb_allreduce.csv") =
+    Base.run(bench, Configuration(T; verbose, filename))

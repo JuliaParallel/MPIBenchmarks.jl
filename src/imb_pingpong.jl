@@ -25,5 +25,5 @@ end
 Base.run(::Type{IMBPingPong}, conf::Configuration) =
     run_imb_p2p(imb_pingpong, conf)
 
-Base.run(bench::Type{IMBPingPong}; T::Type=UInt8, filename::Union{String,Nothing}="julia_imb_pingpong.csv") =
-    Base.run(bench, Configuration(T; filename))
+Base.run(bench::Type{IMBPingPong}; T::Type=UInt8, verbose::Bool=true, filename::Union{String,Nothing}="julia_imb_pingpong.csv") =
+    Base.run(bench, Configuration(T; verbose, filename))
