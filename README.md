@@ -74,8 +74,12 @@ Write a script like the following:
 ```julia
 using MPIBenchmarks
 
+# Collective benchmarks
 run(IMBAllreduce())
+run(IMBAlltoall())
+run(IMBGatherv())
 run(IMBReduce())
+# Point-to-point benchmarks
 run(IMBPingPong())
 run(IMBPingPing())
 ```
