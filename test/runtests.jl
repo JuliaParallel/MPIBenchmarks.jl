@@ -11,11 +11,11 @@ using MPI: mpiexec
     @test conf_uint8.stdout === Base.stdout
     @test isnothing(conf_uint8.filename)
 
-    conf_float32 = Configuration(Float32)
+    conf_float32 = Configuration(Float32; max_size=1<<16)
     @test conf_float32.T === Float32
-    @test conf_float32.lengths == -1:20
+    @test conf_float32.lengths == -1:14
     @test all(==(1000), conf_float32.iters.(-1:13))
-    @test conf_float32.iters.(14:20) == [640, 320, 160, 80, 40, 20, 10]
+    @test conf_float32.iters.(14:16) == [640, 320, 160]
     @test conf_float32.stdout === Base.stdout
     @test isnothing(conf_float32.filename)
 
@@ -28,6 +28,8 @@ using MPI: mpiexec
     @test isnothing(conf_float64.filename)
 
     @test_throws ArgumentError Configuration(Configuration)
+    @test_throws ArgumentError Configuration(UInt8; max_size=10)
+    @test_throws ArgumentError Configuration(UInt64; max_size=2)
 end
 
 @testset "Run benchmarks" begin
