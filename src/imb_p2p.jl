@@ -8,7 +8,12 @@ function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
     # latency and throughput.  But let's check that we actually have at least 2 ranks.
     nranks = 2
     if MPI.Comm_size(comm) < 2
-        error("Point-to-point benchmarks require at least 2 MPI ranks")
+        # Throw error only on rank 0, to avoid messy error messages
+        if iszero(rank)
+            error("IMB point-to-point benchmarks require at least 2 MPI ranks")
+        else
+            exit()
+        end
     end
     # Current rank
     rank = MPI.Comm_rank(comm)

@@ -45,6 +45,7 @@ add https://github.com/JuliaParallel/MPIBenchmarks.jl
 * point-to-point:
   * `IMBPingPong()`: inspired by IMB PingPong
   * `IMBPingPing()`: inspired by IMB PingPing
+  * `OSULatency()`: inspired by OSU Latency
 
 After loading the package
 
@@ -87,15 +88,16 @@ run(IMBPingPing())
 Then execute it with the following command
 
 ```
-mpiexecjl -np 4 julia --project mpi_benchmarks.jl
+mpiexecjl -np 2 julia --project mpi_benchmarks.jl
 ```
 
 where
 
 * `mpiexecjl` is [Julia's wrapper for
   `mpiexec`](https://juliaparallel.org/MPI.jl/dev/usage/#Julia-wrapper-for-mpiexec),
-* `4` is the number of MPI process to launch (use any other suitable number for your
-  benchmarks, at least 2)
+* `2` is the number of MPI process to launch.  Use any other suitable number for
+  your benchmarks, typically at least 2 (note that some point-to-point
+  benchmarks may require exactly 2 processes)
 * `mpi_benchmarks.jl` is the name of the script you created.
 
 ## License

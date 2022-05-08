@@ -11,6 +11,14 @@ using MPI: mpiexec
     @test conf_uint8.stdout === Base.stdout
     @test isnothing(conf_uint8.filename)
 
+    conf_uint8_osu_p2p = Configuration(UInt8; class=:osu_p2p)
+    @test conf_uint8_osu_p2p.T === UInt8
+    @test conf_uint8_osu_p2p.lengths == -1:22
+    @test all(==(10000), conf_uint8_osu_p2p.iters.(-1:12))
+    @test all(==(1000), conf_uint8_osu_p2p.iters.(13:22))
+    @test conf_uint8_osu_p2p.stdout === Base.stdout
+    @test isnothing(conf_uint8_osu_p2p.filename)
+
     conf_float32 = Configuration(Float32; max_size=1<<16)
     @test conf_float32.T === Float32
     @test conf_float32.lengths == -1:14
@@ -55,10 +63,12 @@ end
             mktemp() do filename, io
                 run(IMBPingPong(; verbose, filename))
                 run(IMBPingPing(; verbose, filename))
+                run(OSULatency(; verbose, filename))
             end
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
-        # Point-to-point benchmarks require at least 2 processes
+
+        # IMB point-to-point benchmarks require at least 2 processes
         script = """
             using MPIBenchmarks
             const verbose = false
@@ -67,5 +77,15 @@ end
             end
             """
         @test !success(mpiexec(cmd->ignorestatus(`$(cmd) -np 1 $(julia) --project -e $(script)`)))
+
+        # OSU point-to-point benchmarks require exactly 2 processes
+        script = """
+            using MPIBenchmarks
+            const verbose = false
+            mktemp() do filename, io
+                run(OSULatency(; verbose, filename))
+            end
+            """
+        @test !success(mpiexec(cmd->ignorestatus(`$(cmd) -np 3 $(julia) --project -e $(script)`)))
     end
 end
