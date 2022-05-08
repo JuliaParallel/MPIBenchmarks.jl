@@ -44,6 +44,8 @@ end
 
 include("imb_collective.jl")
 include("imb_p2p.jl")
+
+include("osu_collective.jl")
 include("osu_p2p.jl")
 
 end

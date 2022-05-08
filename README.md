@@ -42,6 +42,8 @@ add https://github.com/JuliaParallel/MPIBenchmarks.jl
   * `IMBAlltoall()`: inspired by IMB Alltoall
   * `IMBGatherv()`: inspired by IMB Gatherv
   * `IMBReduce()`: inspired by IMB Reduce
+  * `OSUAllreduce()`: inspired by OSU Allreduce
+  * `OSUReduce()`: inspired by OSU Reduce
 * point-to-point:
   * `IMBPingPong()`: inspired by IMB PingPong
   * `IMBPingPing()`: inspired by IMB PingPing
@@ -80,9 +82,13 @@ run(IMBAllreduce())
 run(IMBAlltoall())
 run(IMBGatherv())
 run(IMBReduce())
+run(OSUAllreduce())
+run(OSUReduce())
+
 # Point-to-point benchmarks
 run(IMBPingPong())
 run(IMBPingPing())
+run(OSULatency())
 ```
 
 Then execute it with the following command

@@ -27,6 +27,14 @@ using MPI: mpiexec
     @test conf_float32.stdout === Base.stdout
     @test isnothing(conf_float32.filename)
 
+    conf_float32_osu_collective = Configuration(Float32; class=:osu_collective)
+    @test conf_float32_osu_collective.T === Float32
+    @test conf_float32_osu_collective.lengths == -1:20
+    @test all(==(1000), conf_float32_osu_collective.iters.(-1:12))
+    @test all(==(100), conf_float32_osu_collective.iters.(13:22))
+    @test conf_float32_osu_collective.stdout === Base.stdout
+    @test isnothing(conf_float32_osu_collective.filename)
+
     conf_float64 = Configuration(Float64)
     @test conf_float64.T === Float64
     @test conf_float64.lengths == -1:19
@@ -51,6 +59,9 @@ end
                 run(IMBAlltoall(; verbose, filename, max_size=1<<16))
                 run(IMBGatherv(; verbose, filename))
                 run(IMBReduce(; verbose, filename))
+
+                run(OSUAllreduce(; verbose, filename))
+                run(OSUReduce(; verbose, filename))
             end
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
