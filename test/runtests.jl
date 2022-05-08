@@ -61,6 +61,7 @@ end
                 run(IMBReduce(; verbose, filename))
 
                 run(OSUAllreduce(; verbose, filename))
+                run(OSUAlltoall(; verbose, filename))
                 run(OSUReduce(; verbose, filename))
             end
             """

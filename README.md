@@ -5,7 +5,8 @@
 [![Build Status](https://github.com/JuliaParallel/MPIBenchmarks.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/JuliaParallel/MPIBenchmarks.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/JuliaParallel/MPIBenchmarks.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaParallel/MPIBenchmarks.jl)
 
-`MPIBenchmarks.jl` is a collection of benchmarks for `MPI.jl`, the
+`MPIBenchmarks.jl` is a collection of benchmarks for
+[`MPI.jl`](https://github.com/JuliaParallel/MPI.jl), the
 [Julia](https://julialang.org/) wrapper for the Message Passing Interface
 ([MPI](https://www.mpi-forum.org/)).
 
@@ -43,6 +44,7 @@ add https://github.com/JuliaParallel/MPIBenchmarks.jl
   * `IMBGatherv()`: inspired by IMB Gatherv
   * `IMBReduce()`: inspired by IMB Reduce
   * `OSUAllreduce()`: inspired by OSU Allreduce
+  * `OSUAlltoall()`: inspired by OSU Alltoall
   * `OSUReduce()`: inspired by OSU Reduce
 * point-to-point:
   * `IMBPingPong()`: inspired by IMB PingPong
@@ -83,6 +85,7 @@ run(IMBAlltoall())
 run(IMBGatherv())
 run(IMBReduce())
 run(OSUAllreduce())
+run(OSUAlltoall())
 run(OSUReduce())
 
 # Point-to-point benchmarks
