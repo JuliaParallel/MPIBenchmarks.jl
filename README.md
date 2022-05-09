@@ -72,6 +72,17 @@ take the following arguments:
 	of the benchmark.  If `nothing`, the file is not written.  Default is a string with the
 	name of the given benchmark (e.g., `"julia_imb_pingpong.csv"` for `IMBPingPong`).
 
+_**NOTE: kernels of the benchmarks in the IMB and OSU suites are usually very
+similar, if not identical.  After all, they benchmark the same MPI functions.
+However, there are usually subtle differences, for example with regards to the
+number of iterations, datatypes used, how buffers are initialized, etc, which
+can slightly affect the results.  `MPIBenchmarks.jl` tries to match what the
+original benchmarks do, but there is no guarantee about this and there may still
+be unwanted differences.  If you spot any, please open an issue or submit a pull
+request.  As a rule of thumb, OSU benchmarks tend be easier to follow than the
+IMB's, so our implementations of their benchmarks should generally be more
+faithful than compared to the IMB ones.**_
+
 ### Example
 
 Write a script like the following:
