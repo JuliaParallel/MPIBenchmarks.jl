@@ -6,40 +6,24 @@ using MPI: mpiexec
     conf_uint8 = Configuration(UInt8)
     @test conf_uint8.T === UInt8
     @test conf_uint8.lengths == -1:22
-    @test all(==(1000), conf_uint8.iters.(-1:15))
-    @test conf_uint8.iters.(16:22) == [640, 320, 160, 80, 40, 20, 10]
+    @test all(==(1 << 20), conf_uint8.iters.(-1:10))
+    @test conf_uint8.iters.(11:22) == 1 .<< (19:-1:8)
     @test conf_uint8.stdout === Base.stdout
     @test isnothing(conf_uint8.filename)
-
-    conf_uint8_osu_p2p = Configuration(UInt8; class=:osu_p2p)
-    @test conf_uint8_osu_p2p.T === UInt8
-    @test conf_uint8_osu_p2p.lengths == -1:22
-    @test all(==(10000), conf_uint8_osu_p2p.iters.(-1:12))
-    @test all(==(1000), conf_uint8_osu_p2p.iters.(13:22))
-    @test conf_uint8_osu_p2p.stdout === Base.stdout
-    @test isnothing(conf_uint8_osu_p2p.filename)
 
     conf_float32 = Configuration(Float32; max_size=1<<16)
     @test conf_float32.T === Float32
     @test conf_float32.lengths == -1:14
-    @test all(==(1000), conf_float32.iters.(-1:13))
-    @test conf_float32.iters.(14:16) == [640, 320, 160]
+    @test all(==(1 << 18), conf_float32.iters.(-1:8))
+    @test conf_float32.iters.(9:16) == 1 .<< (17:-1:10)
     @test conf_float32.stdout === Base.stdout
     @test isnothing(conf_float32.filename)
-
-    conf_float32_osu_collective = Configuration(Float32; class=:osu_collective)
-    @test conf_float32_osu_collective.T === Float32
-    @test conf_float32_osu_collective.lengths == -1:20
-    @test all(==(1000), conf_float32_osu_collective.iters.(-1:12))
-    @test all(==(100), conf_float32_osu_collective.iters.(13:22))
-    @test conf_float32_osu_collective.stdout === Base.stdout
-    @test isnothing(conf_float32_osu_collective.filename)
 
     conf_float64 = Configuration(Float64)
     @test conf_float64.T === Float64
     @test conf_float64.lengths == -1:19
-    @test all(==(1000), conf_float64.iters.(-1:12))
-    @test conf_float64.iters.(13:19) == [640, 320, 160, 80, 40, 20, 10]
+    @test all(==(1 << 17), conf_float64.iters.(-1:7))
+    @test conf_float64.iters.(8:19) == 1 .<< (16:-1:5)
     @test conf_float64.stdout === Base.stdout
     @test isnothing(conf_float64.filename)
 

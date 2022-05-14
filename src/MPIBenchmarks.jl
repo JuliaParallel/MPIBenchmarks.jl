@@ -18,7 +18,6 @@ function Configuration(T::Type;
                        stdout::Union{IO,Nothing}=nothing,
                        verbose::Bool=true,
                        filename::Union{String,Nothing}=nothing,
-                       class::Symbol=:imb,
                        )
     ispow2(max_size) || throw(ArgumentError("Maximum size must be a power of 2, found $(max_size)"))
     isprimitivetype(T) || throw(ArgumentError("Type $(T) is not a primitive type"))
@@ -28,15 +27,7 @@ function Configuration(T::Type;
     log2size = Int(log2(sizeof(T)))
     last_length = Int(log2(max_size))
     lengths = -1:(last_length - log2size)
-    function iters(s::Int)
-        if class === :osu_collective
-            s < (15 - log2size) ? 1_000 : 100
-        elseif class === :osu_p2p
-            s < (13 - log2size) ? 10_000 : 1_000
-        else # assume class === :imb
-            s < (16 - log2size) ? 1_000 : (640 >> (s - (16 - log2size)))
-        end
-    end
+    iters(s::Int) = 1 << ((s < 10 - log2size) ? (20 - log2size) : (30 - 2 * log2size - s))
     if isnothing(stdout)
         stdout = verbose ? Base.stdout : Base.devnull
     end

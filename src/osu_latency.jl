@@ -10,7 +10,7 @@ function OSULatency(T::Type=UInt8;
                      kwargs...,
                      )
     return OSULatency{T}(
-        Configuration(T; filename, class=:osu_p2p, kwargs...),
+        Configuration(T; filename, kwargs...),
         "OSU Latency",
     )
 end

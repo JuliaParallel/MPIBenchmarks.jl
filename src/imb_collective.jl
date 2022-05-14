@@ -11,8 +11,8 @@ function run_imb_collective(benchmark::MPIBenchmark, func::Function, conf::Confi
     func(conf.T, 1, 10, comm)
 
     if iszero(rank)
-        print_header(io) = println(io, "size (bytes),min_time (seconds),max_time (seconds),avg_time (seconds)")
-        print_timings(io, bytes, min_time, max_time, avg_time) = println(io, bytes, ",", min_time, ",", max_time, ",", avg_time)
+        print_header(io) = println(io, "size (bytes),iters,min_time (seconds),max_time (seconds),avg_time (seconds)")
+        print_timings(io, bytes, iters, min_time, max_time, avg_time) = println(io, bytes, ",", iters, ",", min_time, ",", max_time, ",", avg_time)
 
         println(conf.stdout, "----------------------------------------")
         println(conf.stdout, "Running benchmark ", benchmark.name, " with type ", conf.T, " on ", nranks, " MPI ranks")
@@ -55,9 +55,9 @@ function run_imb_collective(benchmark::MPIBenchmark, func::Function, conf::Confi
             bytes = size * sizeof(conf.T)
 
             # Print out our results
-            print_timings(conf.stdout, bytes, min_time, max_time, avg_time)
+            print_timings(conf.stdout, bytes, iters, min_time, max_time, avg_time)
             if !isnothing(conf.filename)
-                print_timings(file, bytes, min_time, max_time, avg_time)
+                print_timings(file, bytes, iters, min_time, max_time, avg_time)
             end
         end
     end
