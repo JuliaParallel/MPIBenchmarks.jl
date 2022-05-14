@@ -1,5 +1,5 @@
 using Test
-using MPIBenchmarks: Configuration
+using MPIBenchmarks: Configuration, benchmark
 using MPI: mpiexec
 
 @testset "Configuration" begin
@@ -55,14 +55,14 @@ end
             using MPIBenchmarks
             const verbose = false
             mktemp() do filename, io
-                run(IMBAllreduce(; verbose, filename))
-                run(IMBAlltoall(; verbose, filename, max_size=1<<16))
-                run(IMBGatherv(; verbose, filename))
-                run(IMBReduce(; verbose, filename))
+                benchmark(IMBAllreduce(; verbose, filename))
+                benchmark(IMBAlltoall(; verbose, filename, max_size=1<<16))
+                benchmark(IMBGatherv(; verbose, filename))
+                benchmark(IMBReduce(; verbose, filename))
 
-                run(OSUAllreduce(; verbose, filename))
-                run(OSUAlltoall(; verbose, filename))
-                run(OSUReduce(; verbose, filename))
+                benchmark(OSUAllreduce(; verbose, filename))
+                benchmark(OSUAlltoall(; verbose, filename))
+                benchmark(OSUReduce(; verbose, filename))
             end
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
@@ -73,9 +73,9 @@ end
             using MPIBenchmarks
             const verbose = false
             mktemp() do filename, io
-                run(IMBPingPong(; verbose, filename))
-                run(IMBPingPing(; verbose, filename))
-                run(OSULatency(; verbose, filename))
+                benchmark(IMBPingPong(; verbose, filename))
+                benchmark(IMBPingPing(; verbose, filename))
+                benchmark(OSULatency(; verbose, filename))
             end
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
@@ -85,7 +85,7 @@ end
             using MPIBenchmarks
             const verbose = false
             mktemp() do filename, io
-                run(IMBPingPong(; verbose, filename))
+                benchmark(IMBPingPong(; verbose, filename))
             end
             """
         @test !success(mpiexec(cmd->ignorestatus(`$(cmd) -np 1 $(julia) --project -e $(script)`)))
@@ -95,7 +95,7 @@ end
             using MPIBenchmarks
             const verbose = false
             mktemp() do filename, io
-                run(OSULatency(; verbose, filename))
+                benchmark(OSULatency(; verbose, filename))
             end
             """
         @test !success(mpiexec(cmd->ignorestatus(`$(cmd) -np 3 $(julia) --project -e $(script)`)))

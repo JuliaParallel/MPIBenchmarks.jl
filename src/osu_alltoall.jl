@@ -34,4 +34,4 @@ function osu_alltoall(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     return avgtime
 end
 
-Base.run(bench::OSUAlltoall) = run_osu_collective(bench, osu_alltoall, bench.conf)
+benchmark(bench::OSUAlltoall) = run_osu_collective(bench, osu_alltoall, bench.conf)

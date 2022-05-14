@@ -1,7 +1,7 @@
 name = "MPIBenchmarks"
 uuid = "357d3ff1-0a0b-4dea-8b18-618e57d74eb1"
 authors = ["Mosè Giordano <mose@gnu.org> and contributors"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"

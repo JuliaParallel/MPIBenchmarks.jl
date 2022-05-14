@@ -1,7 +1,7 @@
 export IMBPingPong
 
-struct IMBPingPong <: MPIBenchmark
-    conf::Configuration
+struct IMBPingPong{T} <: MPIBenchmark
+    conf::Configuration{T}
     name::String
 end
 
@@ -9,7 +9,7 @@ function IMBPingPong(T::Type=UInt8;
                      filename::Union{String,Nothing}="julia_imb_pingpong.csv",
                      kwargs...,
                      )
-    return IMBPingPong(
+    return IMBPingPong{T}(
         Configuration(T; filename, kwargs...),
         "IMB Pingpong",
     )
@@ -38,4 +38,4 @@ function imb_pingpong(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     return avgtime
 end
 
-Base.run(bench::IMBPingPong) = run_imb_p2p(bench, imb_pingpong, bench.conf; divide_latency_by_two=true)
+benchmark(bench::IMBPingPong) = run_imb_p2p(bench, imb_pingpong, bench.conf; divide_latency_by_two=true)

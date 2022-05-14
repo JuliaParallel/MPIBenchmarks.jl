@@ -30,4 +30,4 @@ function imb_alltoall(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     return avgtime
 end
 
-Base.run(bench::IMBAlltoall) = run_imb_collective(bench, imb_alltoall, bench.conf)
+benchmark(bench::IMBAlltoall) = run_imb_collective(bench, imb_alltoall, bench.conf)

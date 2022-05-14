@@ -3,6 +3,7 @@ module MPIBenchmarks
 using MPI
 
 abstract type MPIBenchmark end
+export benchmark
 
 struct Configuration{T}
     T::Type{T}
@@ -41,6 +42,13 @@ function Configuration(T::Type;
     end
     return Configuration(T, lengths, iters, stdout, filename)
 end
+
+"""
+    benchmark(b::MPIBenchmark)
+
+Execute the MPI benchmark `b`.
+"""
+function benchmark end
 
 include("imb_collective.jl")
 include("imb_p2p.jl")

@@ -28,4 +28,4 @@ function osu_reduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     return avgtime
 end
 
-Base.run(bench::OSUReduce) = run_osu_collective(bench, osu_reduce, bench.conf)
+benchmark(bench::OSUReduce) = run_osu_collective(bench, osu_reduce, bench.conf)

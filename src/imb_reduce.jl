@@ -28,4 +28,4 @@ function imb_reduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     return avgtime
 end
 
-Base.run(bench::IMBReduce) = run_imb_collective(bench, imb_reduce, bench.conf)
+benchmark(bench::IMBReduce) = run_imb_collective(bench, imb_reduce, bench.conf)

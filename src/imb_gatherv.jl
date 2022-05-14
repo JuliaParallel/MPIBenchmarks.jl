@@ -36,4 +36,4 @@ function imb_gatherv(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     return avgtime
 end
 
-Base.run(bench::IMBGatherv) = run_imb_collective(bench, imb_gatherv, bench.conf)
+benchmark(bench::IMBGatherv) = run_imb_collective(bench, imb_gatherv, bench.conf)

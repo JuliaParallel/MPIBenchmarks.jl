@@ -57,7 +57,7 @@ After loading the package
 using MPIBenchmarks
 ```
 
-to run a benchmark use the function `run(<BENCHMARK TYPE>)`, replacing `<BENCHMARK TYPE>`
+to run a benchmark use the function `benchmark(<BENCHMARK TYPE>)`, replacing `<BENCHMARK TYPE>`
 with the name of the benchmark you want to run, from the list above.  The benchmarking types
 take the following arguments:
 
@@ -91,18 +91,18 @@ Write a script like the following:
 using MPIBenchmarks
 
 # Collective benchmarks
-run(IMBAllreduce())
-run(IMBAlltoall())
-run(IMBGatherv())
-run(IMBReduce())
-run(OSUAllreduce())
-run(OSUAlltoall())
-run(OSUReduce())
+benchmark(IMBAllreduce())
+benchmark(IMBAlltoall())
+benchmark(IMBGatherv())
+benchmark(IMBReduce())
+benchmark(OSUAllreduce())
+benchmark(OSUAlltoall())
+benchmark(OSUReduce())
 
 # Point-to-point benchmarks
-run(IMBPingPong())
-run(IMBPingPing())
-run(OSULatency())
+benchmark(IMBPingPong())
+benchmark(IMBPingPing())
+benchmark(OSULatency())
 ```
 
 Then execute it with the following command

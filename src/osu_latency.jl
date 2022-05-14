@@ -1,7 +1,7 @@
 export OSULatency
 
-struct OSULatency <: MPIBenchmark
-    conf::Configuration
+struct OSULatency{T} <: MPIBenchmark
+    conf::Configuration{T}
     name::String
 end
 
@@ -9,7 +9,7 @@ function OSULatency(T::Type=UInt8;
                      filename::Union{String,Nothing}="julia_osu_latency.csv",
                      kwargs...,
                      )
-    return OSULatency(
+    return OSULatency{T}(
         Configuration(T; filename, class=:osu_p2p, kwargs...),
         "OSU Latency",
     )
@@ -36,4 +36,4 @@ function osu_latency(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     return avgtime
 end
 
-Base.run(bench::OSULatency) = run_osu_p2p(bench, osu_latency, bench.conf)
+benchmark(bench::OSULatency) = run_osu_p2p(bench, osu_latency, bench.conf)
