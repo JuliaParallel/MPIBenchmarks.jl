@@ -16,12 +16,12 @@ function IMBPingPong(T::Type=UInt8;
 end
 
 function imb_pingpong(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
+    buffer = zeros(T, bufsize)
     rank = MPI.Comm_rank(comm)
     tag = 0
     MPI.Barrier(comm)
     timer = 0.0
     for i in 1:iters
-        buffer = rand(T, bufsize)
         tic = MPI.Wtime()
         if iszero(rank)
             MPI.Send(buffer, comm; dest=1, tag)
