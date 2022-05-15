@@ -17,11 +17,12 @@ end
 
 function imb_pingpong(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     rank = MPI.Comm_rank(comm)
-    buffer = zeros(T, bufsize)
     tag = 0
     MPI.Barrier(comm)
-    tic = MPI.Wtime()
+    timer = 0.0
     for i in 1:iters
+        buffer = rand(T, bufsize)
+        tic = MPI.Wtime()
         if iszero(rank)
             MPI.Send(buffer, comm; dest=1, tag)
             MPI.Recv!(buffer, comm; source=1, tag)
@@ -32,9 +33,10 @@ function imb_pingpong(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
             MPI.Recv!(buffer, comm; source=0, tag)
             MPI.Send(buffer, comm; dest=0, tag)
         end
+        toc = MPI.Wtime()
+        timer += toc - tic
     end
-    toc = MPI.Wtime()
-    avgtime = (toc - tic) / iters
+    avgtime = timer / iters
     return avgtime
 end
 
