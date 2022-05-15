@@ -20,7 +20,7 @@ function run_osu_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
     func(conf.T, 1, 10, comm)
 
     if iszero(rank)
-        print_header(io) = println(io, "size (bytes),iters,latency (seconds)")
+        print_header(io) = println(io, "size (bytes),iterations,latency (seconds)")
         print_timings(io, bytes, iters, latency) = println(io, bytes, ",", iters, ",", latency)
 
         println(conf.stdout, "----------------------------------------")
@@ -35,7 +35,7 @@ function run_osu_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
 
     for s in conf.lengths
         size = 1 << s
-        iters = conf.iters(s)
+        iters = conf.iters(conf.T, s)
         # Measure time on current rank
         time = func(conf.T, size, iters, comm)
 

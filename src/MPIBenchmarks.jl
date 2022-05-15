@@ -13,25 +13,32 @@ struct Configuration{T}
     filename::Union{String,Nothing}
 end
 
+function iterations(::Type{T}, s::Int) where {T}
+    log2size = trailing_zeros(sizeof(T))
+    return 1 << ((s < 10 - log2size) ? (20 - log2size) : (30 - 2 * log2size - s))
+end
+
 function Configuration(T::Type;
                        max_size::Int=1 << 22,
                        stdout::Union{IO,Nothing}=nothing,
                        verbose::Bool=true,
                        filename::Union{String,Nothing}=nothing,
+                       iterations::Function=iterations,
                        )
     ispow2(max_size) || throw(ArgumentError("Maximum size must be a power of 2, found $(max_size)"))
     isprimitivetype(T) || throw(ArgumentError("Type $(T) is not a primitive type"))
     size = sizeof(T)
     ispow2(size) || throw(ArgumentError("Type $(T) must have size which is a power of 2, found $(size)"))
     max_size > size || throw(ArgumentError("Maximum size in bytes ($(max_size)) must be larger than size of the data type in bytes $(size)"))
-    log2size = Int(log2(sizeof(T)))
+    # We know `size` is a power of 2, so we can use
+    # `trailing_zeros` to get its base-2 logarithm.
+    log2size = trailing_zeros(size)
     last_length = Int(log2(max_size))
     lengths = -1:(last_length - log2size)
-    iters(s::Int) = 1 << ((s < 10 - log2size) ? (20 - log2size) : (30 - 2 * log2size - s))
     if isnothing(stdout)
         stdout = verbose ? Base.stdout : Base.devnull
     end
-    return Configuration(T, lengths, iters, stdout, filename)
+    return Configuration(T, lengths, iterations, stdout, filename)
 end
 
 """

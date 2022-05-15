@@ -6,24 +6,24 @@ using MPI: mpiexec
     conf_uint8 = Configuration(UInt8)
     @test conf_uint8.T === UInt8
     @test conf_uint8.lengths == -1:22
-    @test all(==(1 << 20), conf_uint8.iters.(-1:10))
-    @test conf_uint8.iters.(11:22) == 1 .<< (19:-1:8)
+    @test all(==(1 << 20), conf_uint8.iters.(conf_uint8.T, -1:10))
+    @test conf_uint8.iters.(conf_uint8.T, 11:22) == 1 .<< (19:-1:8)
     @test conf_uint8.stdout === Base.stdout
     @test isnothing(conf_uint8.filename)
 
-    conf_float32 = Configuration(Float32; max_size=1<<16)
+    iterations(T::Type, s::Int) = 1 << (25 - trailing_zeros(sizeof(T)) - s)
+    conf_float32 = Configuration(Float32; max_size=1<<16, iterations)
     @test conf_float32.T === Float32
     @test conf_float32.lengths == -1:14
-    @test all(==(1 << 18), conf_float32.iters.(-1:8))
-    @test conf_float32.iters.(9:16) == 1 .<< (17:-1:10)
+    @test conf_float32.iters.(conf_float32.T, -1:14) == 1 .<< (24:-1:9)
     @test conf_float32.stdout === Base.stdout
     @test isnothing(conf_float32.filename)
 
     conf_float64 = Configuration(Float64)
     @test conf_float64.T === Float64
     @test conf_float64.lengths == -1:19
-    @test all(==(1 << 17), conf_float64.iters.(-1:7))
-    @test conf_float64.iters.(8:19) == 1 .<< (16:-1:5)
+    @test all(==(1 << 17), conf_float64.iters.(conf_float64.T, -1:7))
+    @test conf_float64.iters.(conf_float64.T, 8:19) == 1 .<< (16:-1:5)
     @test conf_float64.stdout === Base.stdout
     @test isnothing(conf_float64.filename)
 
