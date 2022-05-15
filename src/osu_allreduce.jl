@@ -10,7 +10,7 @@ function OSUAllreduce(T::Type=Float32;
                       kwargs...,
                       )
     return OSUAllreduce(
-        Configuration(T; filename, class=:osu_collective, max_size=2 ^ 20, kwargs...),
+        Configuration(T; filename, max_size=2 ^ 20, kwargs...),
         "OSU Allreduce",
     )
 end

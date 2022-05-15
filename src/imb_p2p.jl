@@ -22,8 +22,8 @@ function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
     func(conf.T, 1, 10, comm)
 
     if iszero(rank)
-        print_header(io) = println(io, "size (bytes),time (seconds),throughput (MB/s)")
-        print_timings(io, bytes, latency, throughput) = println(io, bytes, ",", latency, ",", throughput)
+        print_header(io) = println(io, "size (bytes),iterations,time (seconds),throughput (MB/s)")
+        print_timings(io, bytes, iters, latency, throughput) = println(io, bytes, ",", iters, ",", latency, ",", throughput)
 
         println(conf.stdout, "----------------------------------------")
         println(conf.stdout, "Running benchmark ", benchmark.name, " with type ", conf.T, " on ", nranks, " MPI ranks")
@@ -37,7 +37,7 @@ function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
 
     for s in conf.lengths
         size = 1 << s
-        iters = conf.iters(s)
+        iters = conf.iters(conf.T, s)
         # Measure time on current rank
         time = func(conf.T, size, iters, comm)
 
@@ -65,9 +65,9 @@ function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
             throughput = bytes / latency / 1e6
 
             # Print out our results
-            print_timings(conf.stdout, bytes, latency, throughput)
+            print_timings(conf.stdout, bytes, iters, latency, throughput)
             if !isnothing(conf.filename)
-                print_timings(file, bytes, latency, throughput)
+                print_timings(file, bytes, iters, latency, throughput)
             end
         end
     end
