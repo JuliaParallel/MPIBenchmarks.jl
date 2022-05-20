@@ -5,7 +5,7 @@ struct IMBAllreduce <: MPIBenchmark
     name::String
 end
 
-function IMBAllreduce(T::Type=UInt8;
+function IMBAllreduce(T::Type=Float32;
                       filename::Union{String,Nothing}="julia_imb_allreduce.csv",
                       kwargs...,
                       )
