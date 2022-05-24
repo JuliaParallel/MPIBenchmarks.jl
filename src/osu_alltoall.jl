@@ -21,16 +21,18 @@ function osu_alltoall(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     send_buffer = ones(T, bufsize * nranks)
     recv_buffer = zeros(T, bufsize * nranks)
     root = 0
+    timer = 0.0
     MPI.Barrier(comm)
-    tic = MPI.Wtime()
     for i in 1:iters
+        tic = MPI.Wtime()
         MPI.Alltoall!(
             UBuffer(send_buffer, Cint(bufsize), Cint(nranks), MPI.Datatype(T)),
             UBuffer(recv_buffer, Cint(bufsize), Cint(nranks), MPI.Datatype(T)),
             comm)
+        toc = MPI.Wtime()
+        timer += toc - tic
     end
-    toc = MPI.Wtime()
-    avgtime = (toc - tic) / iters
+    avgtime = timer / iters
     return avgtime
 end
 

@@ -20,9 +20,10 @@ function osu_latency(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     send_buffer = rand(T, bufsize)
     recv_buffer = rand(T, bufsize)
     tag = 0
+    timer = 0.0
     MPI.Barrier(comm)
-    tic = MPI.Wtime()
     for i in 1:iters
+        tic = MPI.Wtime()
         if iszero(rank)
             MPI.Send(send_buffer, comm; dest=1, tag)
             MPI.Recv!(recv_buffer, comm; source=1, tag)
@@ -30,9 +31,10 @@ function osu_latency(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
             MPI.Recv!(recv_buffer, comm; source=0, tag)
             MPI.Send(send_buffer, comm; dest=0, tag)
         end
+        toc = MPI.Wtime()
+        timer += toc - tic
     end
-    toc = MPI.Wtime()
-    avgtime = (toc - tic) / iters
+    avgtime = timer / iters
     return avgtime
 end
 

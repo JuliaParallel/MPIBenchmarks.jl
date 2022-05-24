@@ -18,13 +18,15 @@ end
 function imb_allreduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     send_buffer = zeros(T, bufsize)
     recv_buffer = zeros(T, bufsize)
+    timer = 0.0
     MPI.Barrier(comm)
-    tic = MPI.Wtime()
     for i in 1:iters
+        tic = MPI.Wtime()
         MPI.Allreduce!(send_buffer, recv_buffer, +, comm)
+        toc = MPI.Wtime()
+        timer += toc - tic
     end
-    toc = MPI.Wtime()
-    avgtime = (toc - tic) / iters
+    avgtime = timer / iters
     return avgtime
 end
 

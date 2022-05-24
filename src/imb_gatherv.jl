@@ -22,17 +22,19 @@ function imb_gatherv(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     recv_buffer = zeros(T, bufsize * nranks)
     counts = [bufsize for _ in 1:nranks]
     root = 0
+    timer = 0.0
     MPI.Barrier(comm)
-    tic = MPI.Wtime()
     for i in 1:iters
+        tic = MPI.Wtime()
         if rank == root
             MPI.Gatherv!(MPI.IN_PLACE, VBuffer(recv_buffer, counts), comm; root)
         else
             MPI.Gatherv!(send_buffer, nothing, comm; root)
         end
+        toc = MPI.Wtime()
+        timer += toc - tic
     end
-    toc = MPI.Wtime()
-    avgtime = (toc - tic) / iters
+    avgtime = timer / iters
     return avgtime
 end
 

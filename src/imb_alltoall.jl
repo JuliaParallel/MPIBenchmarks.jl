@@ -20,13 +20,15 @@ function imb_alltoall(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     nranks = MPI.Comm_size(comm)
     buffer = zeros(T, bufsize * nranks)
     root = 0
+    timer = 0.0
     MPI.Barrier(comm)
-    tic = MPI.Wtime()
     for i in 1:iters
+        tic = MPI.Wtime()
         MPI.Alltoall!(UBuffer(buffer, Cint(bufsize), Cint(nranks), MPI.Datatype(T)), comm)
+        toc = MPI.Wtime()
+        timer += toc - tic
     end
-    toc = MPI.Wtime()
-    avgtime = (toc - tic) / iters
+    avgtime = timer / iters
     return avgtime
 end
 
