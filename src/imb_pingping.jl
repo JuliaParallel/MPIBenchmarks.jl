@@ -19,20 +19,15 @@ function imb_pingping(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     rank = MPI.Comm_rank(comm)
     send_buffer = zeros(T, bufsize)
     recv_buffer = zeros(T, bufsize)
+    dest = source = iszero(rank) ? 1 : 0
     tag = 0
     timer = 0.0
     MPI.Barrier(comm)
     for i in 1:iters
         tic = MPI.Wtime()
-        if iszero(rank)
-            request = MPI.Isend(send_buffer, comm; dest=1, tag)
-            MPI.Recv!(recv_buffer, comm; source=1, tag)
-            MPI.Wait(request)
-        elseif isone(rank)
-            request = MPI.Isend(send_buffer, comm; dest=0, tag)
-            MPI.Recv!(recv_buffer, comm; source=0, tag)
-            MPI.Wait(request)
-        end
+        request = MPI.Isend(send_buffer, comm; dest, tag)
+        MPI.Recv!(recv_buffer, comm; source, tag)
+        MPI.Wait(request)
         toc = MPI.Wtime()
         timer += toc - tic
     end

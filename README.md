@@ -99,7 +99,8 @@ benchmark(OSUAllreduce())
 benchmark(OSUAlltoall())
 benchmark(OSUReduce())
 
-# Point-to-point benchmarks
+# Point-to-point benchmarks.
+# NOTE: they require exactly two MPI processes.
 benchmark(IMBPingPong())
 benchmark(IMBPingPing())
 benchmark(OSULatency())
@@ -113,11 +114,12 @@ mpiexecjl -np 2 julia --project mpi_benchmarks.jl
 
 where
 
-* `mpiexecjl` is [Julia's wrapper for
+* `mpiexecjl` is [`MPI.jl`'s wrapper for
   `mpiexec`](https://juliaparallel.org/MPI.jl/dev/usage/#Julia-wrapper-for-mpiexec),
 * `2` is the number of MPI process to launch.  Use any other suitable number for
-  your benchmarks, typically at least 2 (note that some point-to-point
-  benchmarks may require exactly 2 processes)
+  your benchmarks, typically at least 2.  Note that point-to-point benchmarks
+  require exactly 2 processes, so if you want to use more processes for the
+  collective operations you will have to run them in a separate script,
 * `mpi_benchmarks.jl` is the name of the script you created.
 
 ## License
