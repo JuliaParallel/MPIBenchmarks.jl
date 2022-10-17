@@ -20,8 +20,8 @@ function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
     func(conf.T, 1, 10, comm)
 
     if iszero(rank)
-        print_header(io) = println(io, "size (bytes),iterations,time (seconds),throughput (MB/s)")
-        print_timings(io, bytes, iters, latency, throughput) = println(io, bytes, ",", iters, ",", latency, ",", throughput)
+        print_header(io) = println(io, "size (bytes),iterations,time (seconds),throughput (MB/s),alloc (B)")
+        print_timings(io, bytes, iters, latency, throughput,alloc) = println(io, bytes, ",", iters, ",", latency, ",", throughput, ",", alloc)
 
         println(conf.stdout, "----------------------------------------")
         println(conf.stdout, "Running benchmark ", benchmark.name, " with type ", conf.T, " on ", nranks, " MPI ranks")
@@ -37,18 +37,19 @@ function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
         size = 1 << s
         iters = conf.iters(conf.T, s)
         # Measure time on current rank
-        time = func(conf.T, size, iters, comm)
+        time, alloc = func(conf.T, size, iters, comm)
 
         if !iszero(rank)
             # If we aren't on rank 0, send to it our time
-            MPI.Send(time, comm; dest=0)
+            MPI.Send([time,alloc], comm; dest=0)
         else
             # Time on rank 0
-            time_0 = time
+            time_0, alloc_0 = time, alloc
             # Time on rank 1
-            time_1 = MPI.Recv(typeof(time), comm; source=1)
+            time_1, alloc_1 = MPI.Recv!([time, alloc], comm; source=1)
             # Maximum of the times measured across all ranks
             max_time = max(time_0, time_1)
+            max_alloc = max(alloc_0, alloc_1)
 
             # Number of bytes trasmitted
             bytes = size * sizeof(conf.T)
@@ -63,9 +64,9 @@ function run_imb_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
             throughput = bytes / latency / 1e6
 
             # Print out our results
-            print_timings(conf.stdout, bytes, iters, latency, throughput)
+            print_timings(conf.stdout, bytes, iters, latency, throughput, max_alloc)
             if !isnothing(conf.filename)
-                print_timings(file, bytes, iters, latency, throughput)
+                print_timings(file, bytes, iters, latency, throughput, max_alloc)
             end
         end
     end
