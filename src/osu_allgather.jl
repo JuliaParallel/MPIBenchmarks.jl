@@ -11,7 +11,7 @@ function OSUAllgather(T::Type=Float32;
                    )
     return OSUAllgather(
         Configuration(T; filename, max_size=2 ^ 20, kwargs...),
-        "OSU Gather",
+        "OSU All Gather",
     )
 end
 
