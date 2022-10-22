@@ -16,11 +16,9 @@ function OSUAllgather(T::Type=Float32;
 end
 
 function osu_allgather(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
-    rank = MPI.Comm_rank(comm)
     nranks = MPI.Comm_size(comm)
     send_buffer = ones(T, bufsize)
     recv_buffer = zeros(T, bufsize * nranks)
-    root = 0
     timer = 0.0
 
     MPI.Barrier(comm)
