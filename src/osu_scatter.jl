@@ -29,7 +29,7 @@ function osu_scatter(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
         if rank == root   
             MPI.Scatter!(UBuffer(send_buffer, Cint(bufsize), nranks,MPI.Datatype(T)), recv_buffer, comm; root=root)
         else
-            MPI.Scatter!(nothing, recv_buffer, comm; root=root)
+            MPI.Scatter!(nothing, recv_buffer, comm; root)
         end
         toc = MPI.Wtime()
         timer += toc - tic
