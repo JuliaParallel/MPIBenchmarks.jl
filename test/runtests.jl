@@ -47,6 +47,11 @@ end
                 benchmark(OSUAllreduce(; verbose, filename))
                 benchmark(OSUAlltoall(; verbose, filename))
                 benchmark(OSUReduce(; verbose, filename))
+
+                benchmark(OSUBroadcast(; verbose, filename))
+                benchmark(OSUGather(; verbose, filename))
+                benchmark(OSUScatter(; verbose, filename))
+                benchmark(OSUAllgather(; verbose, filename))
             end
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
