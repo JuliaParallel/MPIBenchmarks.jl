@@ -89,4 +89,20 @@ end
             """
         @test !success(mpiexec(cmd->ignorestatus(`$(cmd) -np 3 $(julia) --project -e $(script)`)))
     end
+
+    @testset "OSU - One sided" begin
+        # OSU One sided benchmarks require exactly 2 processes
+        script = """
+            using MPIBenchmarks
+            const verbose = false
+            mktemp() do filename, io
+                benchmark(OSUPutLatency())
+                benchmark(OSUPutLatency(; synchronization_option = "fence") )
+                benchmark(OSUGetLatency())
+                benchmark(OSUGetLatency(; synchronization_option = "fence") )
+            end
+            """
+        @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
+    end
+
 end
