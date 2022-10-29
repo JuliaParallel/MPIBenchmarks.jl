@@ -28,7 +28,6 @@ function run_get_with_lock(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, wi
     rank = MPI.Comm_rank(comm)
     buffer = ones(T, bufsize)
     root = 0
-    timer = 0.0    
     tic = 0.0
     if rank == root
         for i in 1:iters
@@ -52,7 +51,6 @@ function run_get_with_fence(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, w
     rank = MPI.Comm_rank(comm)
     buffer = ones(T, bufsize)
     root = 0
-    timer = 0.0
     tic = 0.0
     if rank == root
         for i in 1:iters

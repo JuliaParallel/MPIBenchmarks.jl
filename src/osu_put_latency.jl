@@ -17,9 +17,9 @@ end
 
 function osu_put_latency(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, synchronization_option::String)
     win = MPI.Win_create(ones(T, bufsize), comm)
-    if(synchronization_option == "lock")
+    if synchronization_option == "lock"
        return run_put_with_lock(T, bufsize, iters, comm, win)
-    elseif(synchronization_option == "fence")
+    elseif synchronization_option == "fence"
        return run_put_with_fence(T, bufsize, iters, comm, win)
     end
 end
@@ -28,14 +28,10 @@ function run_put_with_lock(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, wi
     rank = MPI.Comm_rank(comm)
     buffer = ones(T, bufsize)
     root = 0
-    timer = 0.0    
-    tic = 0.0
-     
+    tic = MPI.Wtime()
+
     if rank == root
         for i in 1:iters
-            if i == 1
-                tic = MPI.Wtime()
-            end
             MPI.Win_lock(MPI.LOCK_SHARED , 1, 0, win)
             MPI.Put!(buffer, 1, 0, win)   #Parameter: data, rank, disp, win
             MPI.Win_unlock(1, win)
@@ -53,7 +49,6 @@ function run_put_with_fence(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, w
     rank = MPI.Comm_rank(comm)
     buffer = ones(T, bufsize)
     root = 0
-    timer = 0.0
     tic = 0.0
     if rank == root
         for i in 1:iters

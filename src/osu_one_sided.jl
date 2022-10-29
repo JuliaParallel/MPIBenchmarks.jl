@@ -1,5 +1,5 @@
 function run_osu_one_sided(benchmark::MPIBenchmark, func::Function, conf::Configuration)
-    if (conf.synchronization_option !== "lock" && conf.synchronization_option !== "fence")
+    if conf.synchronization_option ∉ ("lock", "fence")
         error("The value of synchronization_option is incorrect. synchronization_option can be 'lock' or 'fence'")
     end
     MPI.Init()
