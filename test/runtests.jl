@@ -52,6 +52,12 @@ end
                 benchmark(OSUGather(; verbose, filename))
                 benchmark(OSUScatter(; verbose, filename))
                 benchmark(OSUAllgather(; verbose, filename))
+
+                benchmark(OSUScatterv(; verbose, filename))
+                benchmark(OSUGatherv(; verbose, filename))
+                benchmark(OSUAllgatherv(; verbose, filename))
+                benchmark(OSUAlltoallv(; verbose, filename))
+
             end
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
