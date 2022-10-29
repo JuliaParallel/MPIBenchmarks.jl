@@ -28,15 +28,15 @@ function run_put_with_lock(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, wi
     rank = MPI.Comm_rank(comm)
     buffer = ones(T, bufsize)
     root = 0
+    MPI.Barrier(comm)
     tic = MPI.Wtime()
 
     if rank == root
-        for i in 1:iters
-            MPI.Win_lock(MPI.LOCK_SHARED , 1, 0, win)
+        for _ in 1:iters
+            MPI.Win_lock(MPI.LOCK_SHARED, 1, 0, win)
             MPI.Put!(buffer, 1, 0, win)   #Parameter: data, rank, disp, win
             MPI.Win_unlock(1, win)
         end
-        toc = MPI.Wtime()
     end
     MPI.Barrier(comm)
     toc = MPI.Wtime()
@@ -49,17 +49,14 @@ function run_put_with_fence(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, w
     rank = MPI.Comm_rank(comm)
     buffer = ones(T, bufsize)
     root = 0
-    tic = 0.0
+    MPI.Barrier(comm)
+    tic = MPI.Wtime()
     if rank == root
-        for i in 1:iters
-            if i == 1
-                tic = MPI.Wtime()
-            end
+        for _ in 1:iters
             MPI.Win_fence(0, win)
             MPI.Put!(buffer, 1, 0, win)   #Parameter: data, rank, disp, win
             MPI.Win_fence(0, win)
         end
-        toc = MPI.Wtime()
     else
         for _ in 1:iters
             MPI.Win_fence(0, win)
