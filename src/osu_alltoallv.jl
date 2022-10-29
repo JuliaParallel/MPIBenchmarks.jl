@@ -5,7 +5,7 @@ struct OSUAlltoallv <: MPIBenchmark
     name::String
 end
 
-function OSUAlltoallv(T::Type=UInt8;
+function OSUAlltoallv(T::Type=Float32;
                      filename::Union{String,Nothing}="julia_osu_alltoallv.csv",
                      kwargs...,
                      )
