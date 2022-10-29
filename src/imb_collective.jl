@@ -11,7 +11,7 @@ function run_imb_collective(benchmark::MPIBenchmark, func::Function, conf::Confi
     func(conf.T, 1, 10, comm)
 
     if iszero(rank)
-        print_header(io) = println(io, "size (bytes),iteratons,min_time (seconds),max_time (seconds),avg_time (seconds)")
+        print_header(io) = println(io, "size (bytes),iterations,min_time (seconds),max_time (seconds),avg_time (seconds)")
         print_timings(io, bytes, iters, min_time, max_time, avg_time) = println(io, bytes, ",", iters, ",", min_time, ",", max_time, ",", avg_time)
 
         println(conf.stdout, "----------------------------------------")
