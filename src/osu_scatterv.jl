@@ -20,7 +20,7 @@ function osu_scatterv(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     nranks = MPI.Comm_size(comm)
     send_buffer = ones(T, bufsize * nranks)
     recv_buffer = zeros(T, bufsize)
-    counts = [bufsize for _ in 1:nranks]
+    counts = fill(bufsize, nranks)
     root = 0
     timer = 0.0
     MPI.Barrier(comm)

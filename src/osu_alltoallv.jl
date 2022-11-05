@@ -19,7 +19,7 @@ function osu_alltoallv(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     nranks = MPI.Comm_size(comm)
     send_buffer = ones(T, bufsize * nranks)
     recv_buffer = zeros(T, bufsize * nranks)
-    counts = [bufsize for _ in 1:nranks]
+    counts = fill(bufsize, nranks)
     timer = 0.0
     MPI.Barrier(comm)
 
