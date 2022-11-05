@@ -11,6 +11,7 @@ struct Configuration{T}
     iters::Function
     stdout::IO
     filename::Union{String,Nothing}
+    synchronization_option::Union{String,Nothing}
 end
 
 function iterations(::Type{T}, s::Int) where {T}
@@ -24,6 +25,7 @@ function Configuration(T::Type;
                        verbose::Bool=true,
                        filename::Union{String,Nothing}=nothing,
                        iterations::Function=iterations,
+                       synchronization_option::Union{String,Nothing}="lock",
                        )
     ispow2(max_size) || throw(ArgumentError("Maximum size must be a power of 2, found $(max_size)"))
     isprimitivetype(T) || throw(ArgumentError("Type $(T) is not a primitive type"))
@@ -38,7 +40,7 @@ function Configuration(T::Type;
     if isnothing(stdout)
         stdout = verbose ? Base.stdout : Base.devnull
     end
-    return Configuration(T, lengths, iterations, stdout, filename)
+    return Configuration(T, lengths, iterations, stdout, filename, synchronization_option)
 end
 
 """
@@ -53,5 +55,7 @@ include("imb_p2p.jl")
 
 include("osu_collective.jl")
 include("osu_p2p.jl")
+
+include("osu_one_sided.jl")
 
 end
