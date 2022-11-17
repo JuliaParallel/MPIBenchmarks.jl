@@ -103,9 +103,15 @@ end
             const verbose = false
             mktemp() do filename, io
                 benchmark(OSUPutLatency())
-                benchmark(OSUPutLatency(; synchronization_option = "fence") )
+                benchmark(OSUPutLatency(; synchronization_option = "fence"))
                 benchmark(OSUGetLatency())
-                benchmark(OSUGetLatency(; synchronization_option = "fence") )
+                benchmark(OSUGetLatency(; synchronization_option = "fence"))
+
+                benchmark(OSUAccumulateLatency())
+                benchmark(OSUAccumulateLatency(; synchronization_option = "fence"))
+                benchmark(OSUGetAccumulateLatency())
+                benchmark(OSUGetAccumulateLatency(; synchronization_option = "fence"))
+                
             end
             """
         @test success(mpiexec(cmd->run(`$(cmd) -np 2 $(julia) --project -e $(script)`)))
