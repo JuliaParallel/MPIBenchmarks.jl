@@ -16,10 +16,17 @@ function IMBReduce(T::Type=Float32;
 end
 
 function imb_reduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
-    cache_size = 2 ^ 16 # Assume cache size of 64 KiB
-    # To avoid hitting the cache, create buffers which are arrays of arrays of size
-    # `bufsize` so that they exceed the cache size
-    num_buffers = max(1, 2 * cache_size ÷ (sizeof(T) * bufsize))
+    # for Noctua 1, L3 cache is 27.5 MiB
+    # l3: 27.5*1024*1024 = 28835840
+    cache_size =  28835840 
+    
+    # To avoid integer division error when bufsize is equal to zero
+    if bufsize == 0
+        num_buffers = max(1, 2 * cache_size)
+    else
+        num_buffers = max(1, 2 * cache_size ÷ (sizeof(T) * bufsize))
+    end
+    
     send_buffer = [zeros(T, bufsize) for _ in 1:num_buffers]
     recv_buffer = [zeros(T, bufsize) for _ in 1:num_buffers]
     timer = 0.0
