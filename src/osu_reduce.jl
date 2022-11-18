@@ -18,9 +18,8 @@ end
 function osu_reduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
     # for Noctua 1, L3 cache is 27.5 MiB
     # l3: 27.5*1024*1024 = 28835840
-    #cache_size =  28835840 
-    cache_size = 6291456
-
+    cache_size =  28835840 
+    
     # To avoid integer division error when bufsize is equal to zero
     if bufsize == 0
         num_buffers = max(1, 2 * cache_size)
