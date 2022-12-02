@@ -63,3 +63,5 @@ end
 
 include("osu_put_latency.jl")
 include("osu_get_latency.jl")
+include("osu_accumulate.jl")
+include("osu_get_accumulate.jl")
