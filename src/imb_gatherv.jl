@@ -26,10 +26,10 @@ function imb_gatherv(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
         num_buffers = max(1, 2 * cache_size ÷ (sizeof(T) * bufsize))
     end
     
-    send_buffer = [zeros(T, bufsize) for _ in 1:num_buffers]
-    recv_buffer = [zeros(T, bufsize * nranks) for _ in 1:num_buffers]
     rank = MPI.Comm_rank(comm)
     nranks = MPI.Comm_size(comm)
+    send_buffer = [zeros(T, bufsize) for _ in 1:num_buffers]
+    recv_buffer = [zeros(T, bufsize * nranks) for _ in 1:num_buffers]
     
     counts = [bufsize for _ in 1:nranks]
     root = 0

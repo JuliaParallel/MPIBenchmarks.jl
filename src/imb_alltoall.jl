@@ -26,9 +26,9 @@ function imb_alltoall(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, off_cac
         num_buffers = max(1, 2 * cache_size ÷ (sizeof(T) * bufsize))
     end
     
-    buffer = [zeros(T, bufsize * nranks) for _ in 1:num_buffers]
     rank = MPI.Comm_rank(comm)
     nranks = MPI.Comm_size(comm)
+    buffer = [zeros(T, bufsize * nranks) for _ in 1:num_buffers]
     timer = 0.0
 
     MPI.Barrier(comm)

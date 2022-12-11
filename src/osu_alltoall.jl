@@ -26,9 +26,10 @@ function osu_alltoall(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, off_cac
         num_buffers = max(1, 2 * cache_size ÷ (sizeof(T) * bufsize))
     end
     
+    nranks = MPI.Comm_size(comm)
     send_buffer = [ones(T, bufsize * nranks) for _ in 1:num_buffers]
     recv_buffer = [zeros(T, bufsize * nranks) for _ in 1:num_buffers]
-    nranks = MPI.Comm_size(comm)
+
     timer = 0.0
     MPI.Barrier(comm)
     for i in 1:iters
