@@ -8,7 +8,7 @@ function run_imb_collective(benchmark::MPIBenchmark, func::Function, conf::Confi
     nranks = MPI.Comm_size(comm)
 
     # Warmup
-    func(conf.T, 1, 10, comm)
+    func(conf.T, 1, 10, comm, conf.off_cache)
 
     if iszero(rank)
         print_header(io) = println(io, "size (bytes),iteratons,min_time (seconds),max_time (seconds),avg_time (seconds)")
@@ -28,7 +28,7 @@ function run_imb_collective(benchmark::MPIBenchmark, func::Function, conf::Confi
         size = 1 << s
         iters = conf.iters(conf.T, s)
         # Measure time on current rank
-        time = func(conf.T, size, iters, comm)
+        time = func(conf.T, size, iters, comm, conf.off_cache)
 
         if !iszero(rank)
             # If we aren't on rank 0, send to it our time

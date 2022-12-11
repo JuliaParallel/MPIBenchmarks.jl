@@ -15,16 +15,16 @@ function IMBAlltoall(T::Type=UInt8;
     )
 end
 
-function imb_alltoall(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
-    rank = MPI.Comm_rank(comm)
+function imb_alltoall(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, off_cache::Int64 )
+    cache_size =  off_cache # Required in Bytes
+    num_buffers = max(1, 2 * cache_size ÷ max(1, (sizeof(T) * bufsize)))    
     nranks = MPI.Comm_size(comm)
-    buffer = zeros(T, bufsize * nranks)
-    root = 0
+    buffer = [zeros(T, bufsize * nranks) for _ in 1:num_buffers]
     timer = 0.0
     MPI.Barrier(comm)
     for i in 1:iters
         tic = MPI.Wtime()
-        MPI.Alltoall!(UBuffer(buffer, Cint(bufsize), Cint(nranks), MPI.Datatype(T)), comm)
+        MPI.Alltoall!(UBuffer(@inbounds(buffer[mod1(i, num_buffers)]), Cint(bufsize), Cint(nranks), MPI.Datatype(T)), comm)
         toc = MPI.Wtime()
         timer += toc - tic
     end

@@ -15,14 +15,16 @@ function OSUAllreduce(T::Type=Float32;
     )
 end
 
-function osu_allreduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
-    send_buffer = ones(T, bufsize)
-    recv_buffer = zeros(T, bufsize)
+function osu_allreduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, off_cache::Int64)
+    cache_size =  off_cache # Required in Bytes
+    num_buffers = max(1, 2 * cache_size ÷ max(1, (sizeof(T) * bufsize)))
+    send_buffer = [ones(T, bufsize) for _ in 1:num_buffers]
+    recv_buffer = [zeros(T, bufsize) for _ in 1:num_buffers]
     timer = 0.0
     MPI.Barrier(comm)
     for i in 1:iters
         tic = MPI.Wtime()
-        MPI.Allreduce!(send_buffer, recv_buffer, +, comm)
+        MPI.Allreduce!(@inbounds(send_buffer[mod1(i, num_buffers)]), @inbounds(recv_buffer[mod1(i, num_buffers)]), +, comm)
         toc = MPI.Wtime()
         timer += toc - tic
     end

@@ -15,11 +15,9 @@ function OSUReduce(T::Type=Float32;
     )
 end
 
-function osu_reduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
-    cache_size = 2 ^ 16 # Assume cache size of 64 KiB
-    # To avoid hitting the cache, create buffers which are arrays of arrays of size
-    # `bufsize` so that they exceed the cache size
-    num_buffers = max(1, 2 * cache_size ÷ (sizeof(T) * bufsize))
+function osu_reduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, off_cache::Int64 )
+    cache_size =  off_cache # Required in Bytes
+    num_buffers = max(1, 2 * cache_size ÷ max(1, (sizeof(T) * bufsize)))
     send_buffer = [zeros(T, bufsize) for _ in 1:num_buffers]
     recv_buffer = [ones(T, bufsize) for _ in 1:num_buffers]
     timer = 0.0
