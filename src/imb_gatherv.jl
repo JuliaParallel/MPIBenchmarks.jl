@@ -16,21 +16,12 @@ function IMBGatherv(T::Type=UInt8;
 end
 
 function imb_gatherv(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, off_cache::Int64)
-    # If the "off_cache" is equal to zero then there will be no cache avoidance, and only single array of send_buffer & recv_buffer will be created.
     cache_size =  off_cache # Required in Bytes
-    
-    # To avoid integer division error when bufsize is equal to zero
-    if bufsize == 0
-        num_buffers = max(1, 2 * cache_size)
-    else
-        num_buffers = max(1, 2 * cache_size ÷ (sizeof(T) * bufsize))
-    end
-    
+    num_buffers = max(1, 2 * cache_size ÷ max(1, (sizeof(T) * bufsize)))
     rank = MPI.Comm_rank(comm)
     nranks = MPI.Comm_size(comm)
     send_buffer = [zeros(T, bufsize) for _ in 1:num_buffers]
     recv_buffer = [zeros(T, bufsize * nranks) for _ in 1:num_buffers]
-    
     counts = [bufsize for _ in 1:nranks]
     root = 0
     timer = 0.0

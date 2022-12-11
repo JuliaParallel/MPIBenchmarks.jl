@@ -16,20 +16,10 @@ function OSUReduce(T::Type=Float32;
 end
 
 function osu_reduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, off_cache::Int64 )
-    # for Noctua 1, L3 cache is 27.5 MiB
-    # l3: 27.5*1024*1024 = 28835840
-    # If the "off_cache" is equal to zero then there will be no cache avoidance, and only single array of send_buffer & recv_buffer will be created.
     cache_size =  off_cache # Required in Bytes
-    
-    # To avoid integer division error when bufsize is equal to zero
-    if bufsize == 0
-        num_buffers = max(1, 2 * cache_size)
-    else
-        num_buffers = max(1, 2 * cache_size ÷ (sizeof(T) * bufsize))
-    end
+    num_buffers = max(1, 2 * cache_size ÷ max(1, (sizeof(T) * bufsize)))
     send_buffer = [zeros(T, bufsize) for _ in 1:num_buffers]
     recv_buffer = [ones(T, bufsize) for _ in 1:num_buffers]
-
     timer = 0.0
     MPI.Barrier(comm)
     for i in 1:iters

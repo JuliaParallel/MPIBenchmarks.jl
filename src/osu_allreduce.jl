@@ -16,20 +16,10 @@ function OSUAllreduce(T::Type=Float32;
 end
 
 function osu_allreduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, off_cache::Int64)
-
-     # If the "off_cache" is equal to zero then there will be no cache avoidance, and only single array of send_buffer & recv_buffer will be created.
     cache_size =  off_cache # Required in Bytes
-    
-    # To avoid integer division error when bufsize is equal to zero
-    if bufsize == 0
-        num_buffers = max(1, 2 * cache_size)
-    else
-        num_buffers = max(1, 2 * cache_size ÷ (sizeof(T) * bufsize))
-    end
-    
+    num_buffers = max(1, 2 * cache_size ÷ max(1, (sizeof(T) * bufsize)))
     send_buffer = [ones(T, bufsize) for _ in 1:num_buffers]
     recv_buffer = [zeros(T, bufsize) for _ in 1:num_buffers]
-
     timer = 0.0
     MPI.Barrier(comm)
     for i in 1:iters
