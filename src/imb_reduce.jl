@@ -15,10 +15,12 @@ function IMBReduce(T::Type=Float32;
     )
 end
 
-function imb_reduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
+function imb_reduce(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, off_cache::Int64)
     # for Noctua 1, L3 cache is 27.5 MiB
-    # l3: 27.5*1024*1024 = 28835840
-    cache_size =  28835840 
+    # l3: 27.5*1024*1024 = 28835840 Bytes
+
+    # If the "off_cache" is equal to zero then there will be no cache avoidance, and only single array of send_buffer & recv_buffer will be created.
+    cache_size =  off_cache # Required in Bytes
     
     # To avoid integer division error when bufsize is equal to zero
     if bufsize == 0

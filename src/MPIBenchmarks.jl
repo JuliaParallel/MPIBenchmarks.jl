@@ -11,6 +11,7 @@ struct Configuration{T}
     iters::Function
     stdout::IO
     filename::Union{String,Nothing}
+    off_cache::Union{Int64,Nothing}
 end
 
 function iterations(::Type{T}, s::Int) where {T}
@@ -24,6 +25,7 @@ function Configuration(T::Type;
                        verbose::Bool=true,
                        filename::Union{String,Nothing}=nothing,
                        iterations::Function=iterations,
+                       off_cache::Union{Int64,Nothing}=0,
                        )
     ispow2(max_size) || throw(ArgumentError("Maximum size must be a power of 2, found $(max_size)"))
     isprimitivetype(T) || throw(ArgumentError("Type $(T) is not a primitive type"))
@@ -38,7 +40,7 @@ function Configuration(T::Type;
     if isnothing(stdout)
         stdout = verbose ? Base.stdout : Base.devnull
     end
-    return Configuration(T, lengths, iterations, stdout, filename)
+    return Configuration(T, lengths, iterations, stdout, filename, off_cache)
 end
 
 """
