@@ -40,6 +40,7 @@ end
             const verbose = false
             mktemp() do filename, io
                 benchmark(IMBAllreduce(; verbose, filename))
+                benchmark(IMBAllreduce(; verbose, filename, off_cache=28835))
                 benchmark(IMBAlltoall(; verbose, filename, max_size=1<<16))
                 benchmark(IMBGatherv(; verbose, filename))
                 benchmark(IMBReduce(; verbose, filename))
