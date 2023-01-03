@@ -91,6 +91,7 @@ end
             const verbose = false
             mktemp() do filename, io
                 benchmark(OSULatency(; verbose, filename))
+                benchmark(OSUBw(; verbose, filename, window_size=64))
             end
             """
         @test !success(mpiexec(cmd->ignorestatus(`$(cmd) -np 3 $(julia) --project -e $(script)`)))

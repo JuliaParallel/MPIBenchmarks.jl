@@ -1,5 +1,5 @@
 function run_osu_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuration;
-                     divide_latency_by_two::Bool=false)
+                     divide_latency_by_two::Bool=false, cal_bandwidth::Bool=false)
     MPI.Init()
 
     comm = MPI.COMM_WORLD
@@ -17,12 +17,11 @@ function run_osu_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
     end
 
     # Warmup
-    func(conf.T, 1, 10, comm)
+    func(conf.T, 1, 10, comm, conf.window_size)
 
     if iszero(rank)
-        print_header(io) = println(io, "size (bytes),iterations,latency (seconds)")
-        print_timings(io, bytes, iters, latency) = println(io, bytes, ",", iters, ",", latency)
-
+        print_header(io) = cal_bandwidth == true ? println(io, "size (bytes),iterations,bandwidth (MB/s)") :  println(io, "size (bytes),iterations,latency (seconds)")
+        print_result(io, bytes, iters, result) = println(io, bytes, ",", iters, ",", result)
         println(conf.stdout, "----------------------------------------")
         println(conf.stdout, "Running benchmark ", benchmark.name, " with type ", conf.T, " on ", nranks, " MPI ranks")
         println(conf.stdout)
@@ -37,17 +36,24 @@ function run_osu_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
         size = 1 << s
         iters = conf.iters(conf.T, s)
         # Measure time on current rank
-        time = func(conf.T, size, iters, comm)
+        time = func(conf.T, size, iters, comm, conf.window_size)
 
         if iszero(rank)
             # Number of bytes trasmitted
             bytes = size * sizeof(conf.T)
             latency = time / 2
 
+            if cal_bandwidth
+                tmp_total = bytes / 1e+6 * iters * conf.window_size
+                bandwidth = tmp_total / time
+                result = bandwidth
+            else
+                result = latency
+            end
             # Print out our results
-            print_timings(conf.stdout, bytes, iters, latency)
-            if !isnothing(conf.filename)
-                print_timings(file, bytes, iters, latency)
+                print_result(conf.stdout, bytes, iters, latency)
+                if !isnothing(conf.filename)
+                    print_result(file, bytes, iters, result)
             end
         end
     end
@@ -63,3 +69,5 @@ function run_osu_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
 end
 
 include("osu_latency.jl")
+include("osu_bw.jl")
+
