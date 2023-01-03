@@ -36,7 +36,7 @@ function run_osu_one_sided(benchmark::MPIBenchmark, func::Function, conf::Config
 
     for s in conf.lengths
         size = 1 << s
-        iters = conf.iters(conf.T, s)
+        isa(conf.iters, Function) == true ?  iters = conf.iters(conf.T, s) : iters = conf.iters
         # Measure time on current rank
         time = func(conf.T, size, iters, comm, conf.synchronization_option)
 
