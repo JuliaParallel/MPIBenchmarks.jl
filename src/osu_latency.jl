@@ -15,7 +15,7 @@ function OSULatency(T::Type=UInt8;
     )
 end
 
-function osu_latency(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm)
+function osu_latency(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, window_size::Int)
     rank = MPI.Comm_rank(comm)
     send_buffer = rand(T, bufsize)
     recv_buffer = rand(T, bufsize)
