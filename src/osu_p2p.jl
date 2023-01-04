@@ -43,12 +43,11 @@ function run_osu_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
             bytes = size * sizeof(conf.T)
             latency = time / 2
 
-            if cal_bandwidth
+            result = if cal_bandwidth
                 tmp_total = bytes / 1e+6 * iters * conf.window_size
-                bandwidth = tmp_total / time
-                result = bandwidth
+                tmp_total / time
             else
-                result = latency
+                latency
             end
             # Print out our results
                 print_result(conf.stdout, bytes, iters, latency)

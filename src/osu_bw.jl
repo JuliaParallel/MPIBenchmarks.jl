@@ -40,11 +40,10 @@ function osu_bw(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, window_size::
                 recv_list[k] = MPI.Irecv!(recv_buffer, comm; source=0, tag=100)
             end
             MPI.Waitall(recv_list)
-            MPI.send(send_buffer, comm; dest=0, tag=101)
+            MPI.send(send_buffer, comm; dest=root, tag=101)
         end
     end
-    avgtime = timer / iters
-    return avgtime
+    return timer / iters
 end
 
 benchmark(bench::OSUBw) = run_osu_p2p(bench, osu_bw, bench.conf; cal_bandwidth=true)
