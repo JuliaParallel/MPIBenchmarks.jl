@@ -8,7 +8,7 @@ export benchmark
 struct Configuration{T}
     T::Type{T}
     lengths::UnitRange{Int}
-    iters::Function
+    iters::Union{Function, Int}
     stdout::IO
     filename::Union{String,Nothing}
     synchronization_option::Union{String,Nothing}
@@ -24,7 +24,7 @@ function Configuration(T::Type;
                        stdout::Union{IO,Nothing}=nothing,
                        verbose::Bool=true,
                        filename::Union{String,Nothing}=nothing,
-                       iterations::Function=iterations,
+                       iterations::Union{Function, Int}=iterations,
                        synchronization_option::Union{String,Nothing}="lock",
                        )
     ispow2(max_size) || throw(ArgumentError("Maximum size must be a power of 2, found $(max_size)"))

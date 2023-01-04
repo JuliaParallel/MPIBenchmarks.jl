@@ -26,7 +26,7 @@ function run_imb_collective(benchmark::MPIBenchmark, func::Function, conf::Confi
 
     for s in conf.lengths
         size = 1 << s
-        iters = conf.iters(conf.T, s)
+        iters = conf.iters isa Function ?  conf.iters(conf.T, s) : conf.iters
         # Measure time on current rank
         time = func(conf.T, size, iters, comm)
 
