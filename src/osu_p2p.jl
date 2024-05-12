@@ -23,17 +23,17 @@ function run_osu_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
 
     if iszero(rank)
         println(conf.stdout, "# ", benchmark.name, " with type ", conf.T, " on ", nranks, " MPI ranks")
-        if cal_bandwidth == false
-            println(conf.stdout, "size (bytes),iterations,latency (us)")
-        else
+        if cal_bandwidth
             println(conf.stdout, "size (bytes),iterations,bandwidth (MB/s)")
+        else
+            println(conf.stdout, "size (bytes),iterations,latency (us)")
         end
         if !isnothing(conf.filename)
             file = open(conf.filename, "w")
-            if cal_bandwidth == false
-                println(file, "size (bytes),iterations,latency (us)")
-            else
+            if cal_bandwidth
                 println(file, "size (bytes),iterations,bandwidth (MB/s)")
+            else
+                println(file, "size (bytes),iterations,latency (us)")
             end
         end
     end
