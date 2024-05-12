@@ -1,3 +1,5 @@
+using Printf
+
 function run_osu_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuration;
                      divide_latency_by_two::Bool=false, cal_bandwidth::Bool=false)
     MPI.Init()
@@ -20,15 +22,19 @@ function run_osu_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
     func(conf.T, 1, 10, comm, conf.window_size)
 
     if iszero(rank)
-        print_header(io) = cal_bandwidth == true ? println(io, "size (bytes),iterations,bandwidth (MB/s)") :  println(io, "size (bytes),iterations,latency (seconds)")
-        print_result(io, bytes, iters, result) = println(io, bytes, ",", iters, ",", result)
-        println(conf.stdout, "----------------------------------------")
-        println(conf.stdout, "Running benchmark ", benchmark.name, " with type ", conf.T, " on ", nranks, " MPI ranks")
-        println(conf.stdout)
-        print_header(conf.stdout)
+        println(conf.stdout, "# ", benchmark.name, " with type ", conf.T, " on ", nranks, " MPI ranks")
+        if cal_bandwidth == false
+            println(conf.stdout, "size (bytes),iterations,latency (us)")
+        else
+            println(conf.stdout, "size (bytes),iterations,bandwidth (MB/s)")
+        end
         if !isnothing(conf.filename)
             file = open(conf.filename, "w")
-            print_header(file)
+            if cal_bandwidth == false
+                println(file, "size (bytes),iterations,latency (us)")
+            else
+                println(file, "size (bytes),iterations,bandwidth (MB/s)")
+            end
         end
     end
 
@@ -43,16 +49,17 @@ function run_osu_p2p(benchmark::MPIBenchmark, func::Function, conf::Configuratio
             bytes = size * sizeof(conf.T)
             latency = time / 2
 
-            result = if cal_bandwidth
-                tmp_total = bytes / 1e+6 * iters * conf.window_size
+            latency = if cal_bandwidth
+                tmp_total = bytes * iters * conf.window_size / 2^20
                 tmp_total / time
             else
-                latency
+                latency * 1e6
             end
+
             # Print out our results
-                print_result(conf.stdout, bytes, iters, latency)
-                if !isnothing(conf.filename)
-                    print_result(file, bytes, iters, result)
+            Printf.@printf(conf.stdout, "%d,%d,%.2f\n", bytes, iters, latency)
+            if !isnothing(conf.filename)
+                Printf.@printf(file, "%d,%d,%.2f\n", bytes, iters, latency)
             end
         end
     end
