@@ -5,12 +5,25 @@ struct OSULatency{T} <: MPIBenchmark
     name::String
 end
 
+function osu_latency_iterations(::Type{T}, s::Int) where {T}
+    iter = 10000
+    if s < 0
+        buf_size = 0
+    else
+        buf_size = 2^s * sizeof(T)
+    end
+    if buf_size > 8192
+        iter = 1000
+    end
+    return iter
+end
+
 function OSULatency(T::Type=UInt8;
                      filename::Union{String,Nothing}="julia_osu_latency.csv",
                      kwargs...,
                      )
     return OSULatency{T}(
-        Configuration(T; filename, kwargs...),
+        Configuration(T; filename, max_size=2 ^ 22, iterations=osu_latency_iterations, kwargs...),
         "OSU Latency",
     )
 end

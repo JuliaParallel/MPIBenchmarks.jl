@@ -5,12 +5,25 @@ struct OSUBw <: MPIBenchmark
     name::String
 end
 
+function osu_bw_iterations(::Type{T}, s::Int) where {T}
+    iter = 100
+    if s < 0
+        buf_size = 0
+    else
+        buf_size = 2^s * sizeof(T)
+    end
+    if buf_size > 8192
+        iter = 20
+    end
+    return iter
+end
+
 function OSUBw(T::Type=Float32;
                    filename::Union{String,Nothing}="julia_osu_bw.csv",
                    kwargs...,
                    )
     return OSUBw(
-        Configuration(T; filename, max_size=2 ^ 20, kwargs...),
+        Configuration(T; filename, max_size=2 ^ 22, iterations=osu_bw_iterations, kwargs...),
         "OSU Bandwidth",
     )
 end
@@ -40,10 +53,11 @@ function osu_bw(T::Type, bufsize::Int, iters::Int, comm::MPI.Comm, window_size::
                 recv_list[k] = MPI.Irecv!(recv_buffer, comm; source=0, tag=100)
             end
             MPI.Waitall(recv_list)
-            MPI.send(send_buffer, comm; dest=root, tag=101)
+            done_msg = "1"
+            MPI.send(done_msg, comm; dest=root, tag=101)
         end
     end
-    return timer / iters
+    return timer
 end
 
 benchmark(bench::OSUBw) = run_osu_p2p(bench, osu_bw, bench.conf; cal_bandwidth=true)
